@@ -12,30 +12,24 @@
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li><a href="#">Link</a></li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<li><a href="#">Action</a></li>
-						<li class="divider"></li>
-						<li><a href="#">Separated link</a></li>
-					</ul>
-				</li>
+				{% if user.is_authenticated %}
+				<li><a href="/problems">Problems</a></li>
+				{% endif %}
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
+				{% if user.is_authenticated %}
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
-                        <li><a href="/users/edit_profile"></a></li>
-                        <li class="divider"></li>
-						<li><a href="/logout"></a></li>
+						<li><a href="/users/edit_profile">Edit Profile</a></li>
+						<li class="divider"></li>
+						<li><a href="/users/sign_out">Log out</a></li>
 					</ul>
 				</li>
-                {% else %}
+				{% else %}
 				<li><a href="/users/sign_in">Sign in</a></li>
 				<li><a href="/users/sign_up">Sign up</a></li>
-                {% endif %}
+				{% endif %}
 			</ul>
 		</div>
 	</div>
