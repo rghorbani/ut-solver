@@ -1,0 +1,31 @@
+{% extends "layouts/layout.html" %}
+{% load math %}
+
+{% block content %}
+
+<a class="btn btn-primary col-md-3" href="{% url 'new_problem' %}">New Problem</a>
+{% if problems %}
+<table class="table">
+	<thead>
+		<th width="5%">#</th>
+		<th width="10%">Added</th>
+		<th width="65%">Problem</th>
+		<th width="20%"></th>
+	</thead>
+	<tbody>
+		{% for problem in problems %}
+		{% with cnt=problems.count %}
+		<tr>
+			<td>{{ forloop.counter0|sub:problems.count }}</td>
+			<td>{{ problem.created_at }}</td>
+			<td>{{ problem.problem_text }}</td>
+			<td><a class="btn btn-info" href="{% url 'view_problem' problem.id %}">View</a></td>
+		</tr>
+		{% endwith %}
+		{% endfor %}
+	</tbody>
+</table>
+{% else %}
+{% endif %}
+
+{% endblock %}

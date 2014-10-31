@@ -41,7 +41,7 @@ DEFAULT_APPS = (
 THIRD_PARTY_APPS = ()
 
 LOCAL_APPS = (
-    'solver_frontend',
+    'frontend',
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -82,7 +82,8 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'America/New_York'
+# TIME_ZONE = 'America/New_York'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -96,4 +97,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = '/users/sign_in/'
+
 LOGIN_REDIRECT_URL = '/'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

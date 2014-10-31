@@ -1,11 +1,12 @@
 from django.conf.urls import patterns, url
-from solver_frontend import views
+from frontend import views
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
 
     url(r'^problems/$', views.problem_index, name='problems'),
     url(r'^problems/new', views.problem_new, name='new_problem'),
+    url(r'^problems/create', views.problem_create, name='create_problem'),
     url(r'^problems/(?P<problem_id>\d+)/view/$', views.problem_view, name='view_problem'),
 
     url(r'^users/sign_up', views.user_register, name='register'),

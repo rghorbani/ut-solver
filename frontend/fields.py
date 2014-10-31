@@ -1,5 +1,5 @@
 from django import forms
-from solver_frontend.utils import i18n
+from frontend.utils import i18n
 
 class PersianTimeField(forms.TimeField):
     """A time field accepting Persian/Arabic digits in addition to Latin digits."""
