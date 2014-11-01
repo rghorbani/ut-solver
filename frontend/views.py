@@ -2,10 +2,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.template import RequestContext
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.contrib import messages
-from frontend.models import *
+
 from frontend.forms import *
 
 
@@ -24,15 +24,17 @@ def user_register(request):
     if request.user.is_authenticated():
         return redirect('/')
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserCreateForm(request.POST)
         if form.is_valid():
             new_user = form.save()
-            messages.success(request, 'Logged in Successfully.')
+            new_user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, new_user)
+            # messages.success(request, 'Logged in Successfully.')
             return index(request)
         else:
             return redirect('/users/sign_up')
     else:
-        form = UserCreationForm()
+        form = UserCreateForm()
         return render_to_response('users/register.html', {
             'form': form,
             'view_name': 'Register',
@@ -45,15 +47,15 @@ def user_profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
         if form.is_valid():
-            new_user = form.save()
-            messages.success(request, 'Profile updated Successfully.')
+            form.save()
+            # messages.success(request, 'Profile updated Successfully.')
             return index(request)
     else:
         form = UserCreationForm()
         return render_to_response('users/profile.html', {
             'user': user,
             'form': form,
-            'view_name': 'Register',
+            'view_name': 'Profile',
         }, context_instance=RequestContext(request))
 
 

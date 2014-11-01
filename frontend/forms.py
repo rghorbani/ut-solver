@@ -1,6 +1,22 @@
 from models import *
 from django import forms
 from django.forms import fields
+from django.contrib.auth.forms import UserCreationForm
+
+
+class UserCreateForm(UserCreationForm):
+    email = fields.EmailField(required=True)
+
+    def save(self, commit=True):
+        user = super(UserCreateForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
 
 
 class NewProblemForm(forms.ModelForm):
