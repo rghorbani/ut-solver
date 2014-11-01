@@ -23,18 +23,14 @@ def index(request):
 def user_register(request):
     if request.user.is_authenticated():
         return redirect('/')
-    if request.method == 'POST':
-        form = UserCreateForm(request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            new_user.backend = 'django.contrib.auth.backends.ModelBackend'
-            login(request, new_user)
-            # messages.success(request, 'Logged in Successfully.')
-            return index(request)
-        else:
-            return redirect('/users/sign_up')
+    form = UserCreateForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        new_user = form.save()
+        new_user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, new_user)
+        # messages.success(request, 'Logged in Successfully.')
+        return index(request)
     else:
-        form = UserCreateForm()
         return render_to_response('users/register.html', {
             'form': form,
             'view_name': 'Register',
@@ -72,7 +68,7 @@ def problem_index(request):
 
 @login_required
 def problem_new(request):
-    form = NewProblemForm()
+    form = NewProblemForm(request.POST or None)
     return render_to_response('problems/new.html', {
         'user': request.user,
         'view_name': 'New Problem',

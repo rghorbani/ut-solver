@@ -11,25 +11,25 @@
 			<div class="form-group">
 				<label for="{{ form.first_name.id_for_label }}" class="col-sm-2 control-label">{{ form.first_name.label_tag }}</label>
 				<div class="col-sm-4">
-					<input type="text" class="form-control" id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" maxlength="{{ form.first_name.field.max_length }}" placeholder="Enter First Name">
+					<input type="text" class="form-control" id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" maxlength="{{ form.first_name.field.max_length }}" placeholder="Enter First Name" {% if form.first_name.value %} value="{{ form.first_name.value }}" {% endif %}>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="{{ form.last_name.id_for_label }}" class="col-sm-2 control-label">{{ form.last_name.label_tag }}</label>
 				<div class="col-sm-4">
-					<input type="text" class="form-control" id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" maxlength="{{ form.last_name.field.max_length }}" placeholder="Enter Last Name">
+					<input type="text" class="form-control" id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" maxlength="{{ form.last_name.field.max_length }}" placeholder="Enter Last Name" {% if form.last_name.value %} value="{{ form.last_name.value }}" {% endif %}>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="{{ form.email.id_for_label }}" class="col-sm-2 control-label">{{ form.email.label_tag }}</label>
 				<div class="col-sm-4">
-					<input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" placeholder="Enter Email">
+					<input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" placeholder="Enter Email" {% if form.email.value %} value="{{ form.email.value }}" {% endif %}>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="{{ form.username.id_for_label }}" class="col-sm-2 control-label">{{ form.username.label_tag }}</label>
 				<div class="col-sm-4">
-					<input type="text" class="form-control" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" maxlength="{{ form.username.field.max_length }}" placeholder="Enter username">
+					<input type="text" class="form-control" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" maxlength="{{ form.username.field.max_length }}" placeholder="Enter Username" {% if form.username.value %} value="{{ form.username.value }}" {% endif %}>
 				</div>
 				<!-- <span class="help-block">{{ form.username.help_text }}</span> -->
 			</div>
