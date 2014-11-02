@@ -8,7 +8,6 @@
 	<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css" type="text/css" />
 	<link rel="stylesheet" href="{% get_static_prefix %}css/style.css" type="text/css" />
 	<script src="{% get_static_prefix %}js/jquery.min.js"></script>
-	{% csrf_token %}
 </head>
 <body>
 	{% include 'layouts/header.html' %}
@@ -33,5 +32,6 @@
 	
 	{% include 'layouts/footer.html' %}
 	<script src="{% get_static_prefix %}js/bootstrap.min.js"></script>
+	<script src="{% get_static_prefix %}js/d3.min.js"></script>
 </body>
 </html>

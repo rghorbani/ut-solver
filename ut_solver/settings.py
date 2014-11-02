@@ -38,7 +38,10 @@ DEFAULT_APPS = (
     'django.contrib.staticfiles',
 )
 
-THIRD_PARTY_APPS = ()
+THIRD_PARTY_APPS = (
+    'djcelery',
+    'kombu.transport.django',
+)
 
 LOCAL_APPS = (
     'frontend',
@@ -57,6 +60,10 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'ut_solver.urls'
+
+BROKER_URL = 'django://'
+import djcelery
+djcelery.setup_loader()
 
 WSGI_APPLICATION = 'ut_solver.wsgi.application'
 

@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 
 from frontend.forms import *
+from frontend.tasks import *
 
 
 def index(request):
@@ -84,7 +85,8 @@ def problem_create(request):
             problem = form.save(commit=False)
             problem.user_id = request.user
             problem.save()
-            return HttpResponseRedirect('/problems/%s/view' % problem.id)
+            solve_problem.delay(problem)
+            return redirect('/problems/%s/view' % problem.id)
         else:
             return problem_new(request)
     else:

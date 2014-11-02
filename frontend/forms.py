@@ -20,20 +20,23 @@ class UserCreateForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+
+class UserProfileForm(forms.ModelForm):
+    first_name = fields.CharField(required=True, max_length=30)
+    last_name = fields.CharField(required=True, max_length=30)
+    # first_name = fields.CharField(widget=forms.TextInput(attrs={'placeholder': 'First Name', 'class': 'form-control'}), label='First Name', max_length=30)
+    # last_name = fields.CharField(widget=forms.TextInput(attrs={'placeholder': 'Last Name', 'class': 'form-control'}), label='Last Name', max_length=30)
+    email = fields.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
 
 
 class NewProblemForm(forms.ModelForm):
     problem_text = fields.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter the Problem', 'class': 'form-control'}), label='Problem')
-
-    class Meta:
-        model = Problem
-        fields = ('problem_text',)
-
-
-class UserProfileForm(forms.ModelForm):
-    first_name = fields.CharField(widget=forms.TextInput(attrs={'placeholder': 'First Name', 'class': 'form-control'}), label='First Name', max_length=30)
-    last_name = fields.CharField(widget=forms.TextInput(attrs={'placeholder': 'Last Name', 'class': 'form-control'}), label='Last Name', max_length=30)
 
     class Meta:
         model = Problem
