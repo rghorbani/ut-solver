@@ -22,7 +22,7 @@
 					<tr>
 						<td>{{ forloop.counter0|sub:problems.count }}</td>
 						<td>{{ problem.created_at }}</td>
-						<td>{{ problem.problem_text }}</td>
+						<td><pre>{{ problem.problem_text }}</pre></td>
 						<td><a class="btn btn-info" href="{% url 'view_problem' problem.id %}">View</a></td>
 					</tr>
 					{% endwith %}
