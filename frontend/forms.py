@@ -9,6 +9,10 @@ class UserCreateForm(UserCreationForm):
     last_name = fields.CharField(required=True, max_length=30)
     email = fields.EmailField(required=True)
 
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
     def save(self, commit=True):
         user = super(UserCreateForm, self).save(commit=False)
         user.first_name = self.cleaned_data['first_name']
@@ -18,9 +22,13 @@ class UserCreateForm(UserCreationForm):
             user.save()
         return user
 
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+    def clean_username(self):
+        try:
+            User.objects.get(username=self.cleaned_data['username'])
+        except User.DoesNotExist:
+            return self.cleaned_data['username']
+
+        raise forms.ValidationError("Username is taken.")
 
 
 class UserProfileForm(forms.ModelForm):
@@ -33,6 +41,20 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        try:
+            self.fields['first_name'].initial = self.instance.first_name
+            self.fields['last_name'].initial = self.instance.last_name
+            self.fields['email'].initial = self.instance.email
+        except User.DoesNotExist:
+            pass
+
+    # def save(self, *args, **kwargs):
+    #     super(UserProfileForm, self).save(*args, **kwargs)
+    #     self.instance.first_name = self.cleaned_data['first_name']
+    #     self.instance.last_name = self.cleaned_data['last_name']
 
 
 class NewProblemForm(forms.ModelForm):

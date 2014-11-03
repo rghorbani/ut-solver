@@ -6,6 +6,7 @@
 	<meta charset="UTF-8">
 	<title>UT Solver | {% block title %}{% endblock %}</title>
 	<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="{% get_static_prefix %}css/font-awesome.min.css" type="text/css" />
 	<link rel="stylesheet" href="{% get_static_prefix %}css/style.css" type="text/css" />
 	<script src="{% get_static_prefix %}js/jquery.min.js"></script>
 </head>
@@ -26,8 +27,9 @@
 		</div>
 		{% endfor %}
 		{% endif %}
-		
-		{% block content %}{% endblock %}
+		<div class="page-content">
+			{% block content %}{% endblock %}
+		</div>
 	</div>
 	
 	{% include 'layouts/footer.html' %}

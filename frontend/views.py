@@ -41,18 +41,14 @@ def user_register(request):
 @login_required
 def user_profile(request):
     user = request.user
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            form.save()
-            # messages.success(request, 'Profile updated Successfully.')
-            return index(request)
+    form = UserProfileForm(request.POST or None, instance=user)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('/')
     else:
-        form = UserCreationForm()
         return render_to_response('users/profile.html', {
-            'user': user,
             'form': form,
-            'view_name': 'Profile',
+            'view_name': 'Edit Profile',
         }, context_instance=RequestContext(request))
 
 

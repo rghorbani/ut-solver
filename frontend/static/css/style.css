@@ -1,4 +1,40 @@
 
-body {
+body .container {
 	/*padding-top: 70px;*/
+	position: relative;
+	min-height: 100%;
+}
+
+.page-content {
+	height: 100%;
+	padding-bottom: 180px;
+}
+
+footer {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	margin-bottom: 40px;
+	padding-top: 50px;
+}
+
+footer h4 {
+	text-transform: uppercase;
+	font-weight: 600;
+	font-size: 90%;
+}
+
+footer a {
+	text-decoration: none;
+}
+
+footer a:hover {
+	color: #484c57;
+}
+
+footer nav a {
+	display: block;
+	color: #9196aa;
+	font-weight: normal;
 }
