@@ -38,3 +38,20 @@ footer nav a {
 	color: #9196aa;
 	font-weight: normal;
 }
+
+.scroll-up {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	padding: 5px 10px;
+	background-color: #ddd;
+	border-radius: 5px;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 16px;
+	transition: transform 0.8s ease-in-out;
+}
+
+.scroll-up:hover {
+	background-color: #ccc;
+}

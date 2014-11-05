@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
+MODE = 'development'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -20,11 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'g+9d8!3r4n$d1xvge#8ac=pzfm3oh1^4-+9#eyz5$@lc3mwoeh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if MODE == 'development':
+    DEBUG = TEMPLATE_DEBUG = True
+else:
+    DEBUG = TEMPLATE_DEBUG = False
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.troplat.ir',
+    '.troplat.ir.'
+]
 
 
 # Application definition
@@ -61,8 +65,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'ut_solver.urls'
 
-BROKER_URL = 'django://'
 import djcelery
+BROKER_URL = 'django://'
 djcelery.setup_loader()
 
 WSGI_APPLICATION = 'ut_solver.wsgi.application'
@@ -71,18 +75,24 @@ WSGI_APPLICATION = 'ut_solver.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'solver',
-        # 'USER': 'root',
-        # 'PASSWORD': '',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '5432',
+if MODE == 'development':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'solver',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': '',
+            'PORT': '',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
