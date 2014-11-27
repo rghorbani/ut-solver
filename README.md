@@ -7,3 +7,7 @@
  - celery
  - django-celery
  - redis
+ - numpy
+ - matplotlib
+ - jinja2
+ - mpld3

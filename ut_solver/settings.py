@@ -45,10 +45,15 @@ DEFAULT_APPS = (
 THIRD_PARTY_APPS = (
     'djcelery',
     'kombu.transport.django',
+    'jinja2',
+    'numpy',
+    'matplotlib',
+    'mpld3',
 )
 
 LOCAL_APPS = (
     'frontend',
+    'lex',
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -112,6 +117,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+# Production
+# http://stackoverflow.com/questions/4420378/why-my-django-admin-site-does-not-have-the-css-style
+# use this command 'mysite.com/app_folder/static$ sudo ln -s /usr/local/lib/python2.7/dist-packages/django/contrib/admin/static/admin/ admin'
+STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/users/sign_in/'

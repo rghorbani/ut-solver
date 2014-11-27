@@ -1,6 +1,10 @@
 
+body {
+	/*position: relative;*/
+	padding-bottom: 80px;
+}
+
 body .container {
-	/*padding-top: 70px;*/
 	position: relative;
 	min-height: 100%;
 }
@@ -15,8 +19,10 @@ footer {
 	position: absolute;
 	bottom: 0;
 	left: 0;
+	right: 0;
+	/*margin-top: -180px;*/
 	margin-bottom: 40px;
-	padding-top: 50px;
+	/*padding-top: 50px;*/
 }
 
 footer h4 {
@@ -37,6 +43,12 @@ footer nav a {
 	display: block;
 	color: #9196aa;
 	font-weight: normal;
+}
+
+footer nav a i {
+	margin-right: 5px;
+	color: #7eccc2;
+	font-weight: 500;
 }
 
 .scroll-up {

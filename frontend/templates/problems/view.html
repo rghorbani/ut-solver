@@ -7,6 +7,116 @@
 		<div class="col-md-6">
 			<pre><code>{{ problem.problem_text }}</code></pre>
 		</div>
-		<div class="col-md-6"></div>
+		<div class="col-md-6">
+			<div class="poly" style="margin-left: 10px;"></div>
+		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div>{% autoescape off %}{{ figure }}{% endautoescape %}</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		// var w = 300,
+		// 	h = 300,
+		// 	p = 20;
+		// var visual = d3.select(".poly")
+		// 	.append("svg")
+		// 	.attr("style", "padding: 30px 30px 30px 30px;")
+		// 	.attr("width", w)
+		// 	.attr("height", h);
+		// 	// .append("g")
+		// 	// .attr("transform", "translate(" + p + "," + p + ")");
+		// var scaleX = d3.scale.linear()
+		// 	.domain([0, 30])
+		// 	.range([0, w]);
+		// var scaleY = d3.scale.linear()
+		// 	.domain([0, 30])
+		// 	.range([h, 0]);
+
+		// var axes = visual.append("g")
+		// 	.attr('transform', 'translate(' + (0.125 * w) + ',' + ((1 - 0.125 - 0.775) * h) + ')')
+		// 	.attr('width', w * 0.775)
+		// 	.attr('height', h * 0.775)
+		// 	.attr('class', 'main');
+		// var xAxis = d3.svg.axis()
+		// 	.scale(scaleX)
+		// 	.orient("bottom");
+		// var yAxis = d3.svg.axis()
+		// 	.scale(scaleY)
+		// 	.orient("left");
+
+		// axes.append("g")
+		// 	.attr('transform', 'translate(0,' + (h * 0.775) + ')')
+		// 	.attr('class', 'x axis')
+		// 	.call(xAxis);
+		// axes.append("g")
+		// 	.attr('transform', 'translate(0, 0)')
+		// 	.attr('class', 'y axis')
+		// 	.call(yAxis);
+
+		// var poly = [{"x":0.0, "y":25.0},
+		// 	{"x":8.5,"y":36},
+		// 	{"x":8.5,"y":23.4},
+		// 	{"x":13.0,"y":21.0},
+		// 	{"x":19.0,"y":15.5},
+		// 	{"x":10.0,"y":10}];
+
+		// axes.append("svg:g").selectAll("polygon")
+		// 	.data([poly])
+		// 	.enter().append("polygon")
+		// 	.attr("points",function(d) { 
+		// 	return d.map(function(d) { return [scaleX(d.x),scaleY(d.y)].join(","); }).join(" ");})
+		// 	.attr("stroke","black")
+		// 	.attr("stroke-width",2);
+
+		// var xRule = visual.selectAll("g.x")
+		// 	.data(scaleX.ticks(10)).enter()
+		// 	.append("g")
+		// 	.attr("class", "x");
+		// var yRule = visual.selectAll("g.y")
+		// 	.data(scaleY.ticks(10)).enter()
+		// 	.append("g")
+		// 	.attr("class", "y");
+
+		// visual.append("line")
+		// 	.attr("x1", 0)
+		// 	.attr("x2", w)
+		// 	.attr("y1", h)
+		// 	.attr("y2", h)
+		// 	.style("stroke", "#ccc");
+		// visual.append("line")
+		// 	.attr("x1", 0)
+		// 	.attr("x2", 0)
+		// 	.attr("y1", 0)
+		// 	.attr("y2", h)
+		// 	.style("stroke", "#ccc");
+		// yRule.append("line")
+		// 	.attr("x1", w)
+		// 	.attr("x2", 0)
+		// 	.attr("y1", scaleY)
+		// 	.attr("y2", scaleY)
+		// 	.style("stroke", "#ccc");
+
+		// xRule.append("text")
+		// 	.attr("x", scaleX)
+		// 	.attr("y", h + 3)
+		// 	.attr("dy", ".71em")
+		// 	.attr("text-anchor", "middle")
+		// 	.text(scaleX.tickFormat(10));
+		// yRule.append("text")
+		// 	.attr("x", -3)
+		// 	.attr("y", scaleY)
+		// 	.attr("dy", ".35em")
+		// 	.attr("text-anchor", "end")
+		// 	.text(scaleY.tickFormat(10));
+
+		// visual.append("g")
+		// 	.attr("class", "x axis")
+		// 	.call(xAxis);
+		// visual.append("g")
+		// 	.attr("class", "y axis")
+		// 	.call(yAxis);
+	</script>
 {% endblock %}

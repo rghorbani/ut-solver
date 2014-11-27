@@ -16,8 +16,11 @@
 				<thead>
 					<th width="5%">#</th>
 					<th width="10%">Added</th>
-					<th width="65%">Problem</th>
-					<th width="20%"></th>
+					{% if is_admin %}
+					<th width="10%">User</th>
+					{% endif %}
+					<th width="">Problem</th>
+					<th width="15%"></th>
 				</thead>
 				<tbody>
 					{% for problem in problems %}
@@ -25,6 +28,9 @@
 					<tr>
 						<td>{{ forloop.counter0|sub:problems.count }}</td>
 						<td>{{ problem.created_at }}</td>
+						{% if is_admin %}
+						<td>{{ problem.user.id }}</td>
+						{% endif %}
 						<td><pre>{{ problem.problem_text }}</pre></td>
 						<td><a class="btn btn-info" href="{% url 'view_problem' problem.id %}">View</a></td>
 					</tr>

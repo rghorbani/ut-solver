@@ -1,4 +1,3 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.template import RequestContext
@@ -8,6 +7,14 @@ from django.contrib import messages
 
 from frontend.forms import *
 from frontend.tasks import *
+
+# %matplotlib inline
+import matplotlib.pyplot as plt
+from matplotlib.path import Path
+# from matplotlib import get_current_fig_manager
+import matplotlib.patches as patches
+from mpld3 import fig_to_html, plugins
+from ut_solver.settings import STATIC_URL
 
 
 def index(request):
@@ -55,11 +62,15 @@ def user_profile(request):
 @login_required
 def problem_index(request):
     user = request.user
-    problems = Problem.objects.filter(user_id=user.id).order_by('-created_at')
+    if user.is_superuser:
+        problems = Problem.objects.all().order_by('-created_at')
+    else:
+        problems = Problem.objects.filter(user_id=user.id).order_by('-created_at')
     return render_to_response('problems/index.html', {
         'user': user,
         'problems': problems,
         'view_name': 'Problems',
+        'is_admin': user.is_superuser,
     })
 
 
@@ -91,10 +102,48 @@ def problem_create(request):
 
 @login_required
 def problem_view(request, problem_id):
+    user = request.user
     problem = get_object_or_404(Problem, id=problem_id)
+    if problem.user_id != user or not user.is_superuser:
+        raise PermissionDenied
+
+    # fig, ax = plt.subplots()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    vertics = [
+        (1, 1),
+        (1, 2),
+        (2, 2),
+        (2, 1),
+        (1, 1),
+    ]
+    codes = [
+        Path.MOVETO,
+        Path.LINETO,
+        Path.LINETO,
+        Path.LINETO,
+        Path.CLOSEPOLY,
+    ]
+    path = Path(vertics, codes)
+    patch = patches.PathPatch(path, facecolor='orange', lw=2)
+    ax.add_patch(patch)
+    ax.set_xlim(-1, 3)
+    ax.set_ylim(-1, 3)
+    xs, ys = zip(*vertics)
+    ax.plot(xs, ys, 'x-', lw=2, color='black', ms=10)
+    ax.plot([2, 0], [0, 2], 'k--', lw=1)
+    ax.plot([0], [0], 'w,', lw=1)
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_title('2D Plot of Problem!', size=14)
+    plugins.clear(fig)
+    plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
+    figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
+
     return render_to_response('problems/view.html', {
-        'user': request.user,
+        'user': user,
         'problem': problem,
+        'figure': figure,
         'view_name': 'Problem - %s' % problem.id,
     })
 
