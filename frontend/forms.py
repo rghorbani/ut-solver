@@ -58,7 +58,7 @@ class UserProfileForm(forms.ModelForm):
 
 
 class NewProblemForm(forms.ModelForm):
-    problem_text = fields.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter the Problem', 'class': 'form-control'}), label='Problem')
+    problem_text = fields.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter the Problem', 'class': 'form-control'}), label='Problem', error_messages={'required': 'You should choose one type.'})
 
     class Meta:
         model = Problem

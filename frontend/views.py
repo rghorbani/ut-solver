@@ -104,7 +104,7 @@ def problem_create(request):
 def problem_view(request, problem_id):
     user = request.user
     problem = get_object_or_404(Problem, id=problem_id)
-    if problem.user_id != user or not user.is_superuser:
+    if problem.user_id != user and not user.is_superuser:
         raise PermissionDenied
 
     # fig, ax = plt.subplots()
@@ -135,7 +135,7 @@ def problem_view(request, problem_id):
     ax.plot([0], [0], 'w,', lw=1)
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
-    ax.set_title('2D Plot of Problem!', size=14)
+    ax.set_title('2D Plot of the Problem!', size=14)
     plugins.clear(fig)
     plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
     figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
@@ -149,9 +149,27 @@ def problem_view(request, problem_id):
 
 
 @login_required
+def problem_edit(request, problem_id):
+    user = request.user
+    if not user.is_superuser:
+        raise PermissionDenied
+    problem = get_object_or_404(Problem, id=problem_id)
+    form = NewProblemForm(request.POST or problem)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('/problems')
+    else:
+        return render_to_response('problems/edit.html', {
+            'user': user,
+            'form': form,
+            'view_name': 'Edit Problem - %s' % problem.id,
+        }, context_instance=RequestContext(request))
+
+
+@login_required
 def problem_delete(request, problem_id):
     problem = get_object_or_404(Problem, id=problem_id)
-    if problem.user_id == request.user.id:
+    if problem.user_id == request.user:
         problem.delete()
         redirect('/problems')
     else:
@@ -161,6 +179,7 @@ def problem_delete(request, problem_id):
 def handler403(request):
     message = "403! You Don't have permission to access this page!"
     return render_to_response('error.html', {
+        'user': request.user,
         'message': message,
         'view_name': '403',
     })
@@ -169,6 +188,7 @@ def handler403(request):
 def handler404(request):
     message = "404! The page you requested was not found!"
     return render_to_response('error.html', {
+        'user': request.user,
         'message': message,
         'view_name': '404',
     })
@@ -177,6 +197,7 @@ def handler404(request):
 def handler500(request):
     message = "500! Something went wrong with our server. We are sorry!"
     return render_to_response('error.html', {
+        'user': request.user,
         'message': message,
         'view_name': '500',
     })

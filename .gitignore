@@ -46,6 +46,7 @@ coverage.xml
 
 # Django stuff:
 *.log
+frontend/static/admin
 
 # Sphinx documentation
 docs/_build/
@@ -58,3 +59,5 @@ target/
 
 # PyCharm
 .idea/
+
+ut_solver/secret.yaml

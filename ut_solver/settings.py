@@ -25,6 +25,8 @@ if MODE == 'development':
 else:
     DEBUG = TEMPLATE_DEBUG = False
 
+ADMINS = (('Reza', 'r.ghorbani.f@gmail.com'),)
+
 ALLOWED_HOSTS = [
     '.troplat.ir',
     '.troplat.ir.'
@@ -80,24 +82,17 @@ WSGI_APPLICATION = 'ut_solver.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-if MODE == 'development':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'solver',
+        'USER': 'solver',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'solver',
-            'USER': 'root',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': '',
-        }
-    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -112,6 +107,14 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'ut.solver00'
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'ut.solver00'
+DEFAULT_TO_EMAIL = 'r.ghorbani.f@gmail.com'
 
 
 # Static files (CSS, JavaScript, Images)
