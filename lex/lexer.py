@@ -60,10 +60,9 @@ precedence = (
     ('right', 'UMINUS'),
 )
 
-from sets import Set
 # dictionary of variables
-variables = Set([])
-slack_variables = Set([])
+variables = set([])
+slack_variables = set([])
 list_variables = []
 list_slack_variables = []
 x_matrix = []
