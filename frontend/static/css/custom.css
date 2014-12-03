@@ -1,4 +1,13 @@
 
+html {
+	margin: 0;
+	padding: 0;
+}
+
+.center {
+	text-align: center;
+}
+
 .btn {
 	border: none;
 	border-radius: 5px;
@@ -15,7 +24,7 @@
 }
 
 header nav {
-	background-color: transparent !important;
+	background-color: #fff !important;
 	border-color: transparent !important;
 }
 
@@ -46,8 +55,9 @@ header nav ul > li.active > a {
 
 body {
 	font-family: "Helvetica Neue", Arial, sans-serif;
-	padding-bottom: 80px;
-	height: 100%;
+	/*position: relative;*/
+	/*padding-bottom: 80px;*/
+	/*height: 100%;*/
 }
 
 body .container {
@@ -60,12 +70,19 @@ body .container {
 	padding-bottom: 180px;
 }
 
+footer:before, footer:after {
+	content: "";
+	display: table;
+	line-height: 0;
+}
+
 footer {
 	width: 100%;
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	margin: 0;
 	padding-bottom: 40px;
 	background-color: #d4e4ee;
 }
@@ -120,6 +137,7 @@ footer nav a.social i {
 	text-align: center;
 	vertical-align: middle;
 	font-size: 16px;
+	z-index: 1200;
 	transition: transform 0.8s ease-in-out;
 }
 

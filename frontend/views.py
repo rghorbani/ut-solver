@@ -15,6 +15,7 @@ from matplotlib.path import Path
 import matplotlib.patches as patches
 from mpld3 import fig_to_html, plugins
 from ut_solver.settings import STATIC_URL
+from lex.lexer import solve_p
 
 
 def index(request):
@@ -140,10 +141,17 @@ def problem_view(request, problem_id):
     plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
     figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
 
+    # calc = solve_p()
+    # res = calc(problem.problem_text)
+    a, b, c = solve_p(problem.problem_text)
+
     return render_to_response('problems/view.html', {
         'user': user,
         'problem': problem,
         'figure': figure,
+        'a': a,
+        'b': b,
+        'c': c,
         'view_name': 'Problem - %s' % problem.id,
     })
 

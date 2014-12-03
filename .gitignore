@@ -46,7 +46,6 @@ coverage.xml
 
 # Django stuff:
 *.log
-frontend/static/admin
 
 # Sphinx documentation
 docs/_build/
@@ -60,4 +59,7 @@ target/
 # PyCharm
 .idea/
 
+frontend/static/admin
 ut_solver/secret.yaml
+parser.out
+parsetab.py

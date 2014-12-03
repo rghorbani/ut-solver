@@ -16,6 +16,44 @@
 			<div>{% autoescape off %}{{ figure }}{% endautoescape %}</div>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-8">
+			<h4>A matrix</h4>
+			<table class="table table-bordered center">
+				<tbody>
+					{% for row in a %}
+					<tr>
+						{% for item in c %}
+						<td>{{ item }}</td>
+						{% endfor %}
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-1">
+			<h4>B matrix</h4>
+			<table class="table table-bordered center">
+				<tbody>
+					{% for item in b %}
+					<tr><td>{{ item }}</td></tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-3">
+			<h4>C matrix</h4>
+			<table class="table table-bordered center">
+				<tbody>
+					<tr>
+						{% for item in c %}
+						<td>{{ item }}</td>
+						{% endfor %}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
 	<script type="text/javascript">
 		// var w = 300,
