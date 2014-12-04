@@ -141,10 +141,15 @@ def problem_view(request, problem_id):
     plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
     figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
 
-    a, b, c = parse_problem(problem.problem_text)
+    parse_result = parse_problem(problem.problem_text)
+    a = None
+    b = None
+    c = None
     result = None
-    if a and b and c:
-        result = simple_simplex(a, b, c)
+    if parse_result:
+        a, b, c = parse_result
+        if a and b and c:
+            result = simple_simplex(a, b, c)
 
     return render_to_response('problems/view.html', {
         'user': user,
