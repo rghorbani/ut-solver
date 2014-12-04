@@ -2,7 +2,6 @@
 # from Simplex2 import simple_simplex
 import sys
 import copy
-import time
 
 sys.path.insert(0, "../..")
 
@@ -84,11 +83,6 @@ start = 'statement'
 
 def p_statement_assign(p):
     '''statement : NAME goal subjects ';' NL '''
-    # p += '\n'
-    # print(p)
-    # for char in p:
-    #     print "#%s#" % char
-    #     time.sleep(.25)
     if p[1] == 'min':
         goal = 'min'
     elif p[1] == 'max':
@@ -140,7 +134,6 @@ def p_statement_assign(p):
     # print("b matrix", b_matrix)
     # print("a matrix", a_matrix)
     p[0] = [a_matrix, b_matrix, c_matrix]
-    # simple_simplex(a_matrix, b_matrix, c_matrix)
 
 
 def p_statement_goal(p):
@@ -268,8 +261,8 @@ def p_error(p):
         print("Syntax error at EOF")
 
 
-def solve_p(s):
+def parse_problem(s):
     import ply.yacc as yacc
-    parser = yacc.yacc()
+    parser = yacc.yacc(debug=False, write_tables=False)
     res = parser.parse(s)
     return res
