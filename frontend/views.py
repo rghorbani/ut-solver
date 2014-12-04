@@ -142,7 +142,9 @@ def problem_view(request, problem_id):
     figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
 
     a, b, c = parse_problem(problem.problem_text)
-    result = simple_simplex(a, b, c)
+    result = None
+    if a and b and c:
+        result = simple_simplex(a, b, c)
 
     return render_to_response('problems/view.html', {
         'user': user,
