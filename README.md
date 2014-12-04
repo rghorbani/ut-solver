@@ -3,7 +3,7 @@
 
 *Installed libraries:*
 ==================================================
- - i18n
+ - django 1.7.1
  - celery
  - django-celery
  - redis

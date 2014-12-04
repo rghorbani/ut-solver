@@ -3,10 +3,10 @@
 import sys
 import copy
 
-sys.path.insert(0, "../..")
+# sys.path.insert(0, "../..")
 
-if sys.version_info[0] >= 3:
-    raw_input = input
+# if sys.version_info[0] >= 3:
+#     raw_input = input
 
 tokens = (
     'NUMBER', 'LTE', 'GTE', 'LT', 'GT', 'PLUS',
@@ -245,7 +245,6 @@ def p_expression_name(p):
         variables.add(p[3])
         p[0] = (p[1], p[3])
     else:
-
         variables.add(p[1])
         p[0] = (float(1), p[1])
     global variable_factors_row
@@ -264,5 +263,4 @@ def p_error(p):
 def parse_problem(s):
     import ply.yacc as yacc
     parser = yacc.yacc(debug=False, write_tables=False)
-    res = parser.parse(s)
-    return res
+    return parser.parse(s)
