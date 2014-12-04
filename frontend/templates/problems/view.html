@@ -8,10 +8,15 @@
 			<pre><code>{{ problem.problem_text }}</code></pre>
 		</div>
 		<div class="col-md-6">
+			{% if parse_error %}
 			<p>Reslut: {{ result }}</p>
+			{% else %}
+			<p>Error in parsing equation</p>
+			{% endif %}
 			<!-- <div class="poly" style="margin-left: 10px;"></div> -->
 		</div>
 	</div>
+	{% if parse_error %}
 	<div class="row">
 		<div class="col-md-12">
 			<div>{% autoescape off %}{{ figure }}{% endautoescape %}</div>
@@ -55,6 +60,7 @@
 			</table>
 		</div>
 	</div>
+	{% endif %}
 
 	<script type="text/javascript">
 		// var w = 300,

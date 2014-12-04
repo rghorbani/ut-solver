@@ -1,6 +1,6 @@
 # from Simplex2 import Simplex
 # from Simplex2 import simple_simplex
-import sys
+# import sys
 import copy
 
 # sys.path.insert(0, "../..")
