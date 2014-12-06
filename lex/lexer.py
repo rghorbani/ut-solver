@@ -82,7 +82,7 @@ start = 'statement'
 
 
 def p_statement_assign(p):
-    '''statement : NAME goal subjects ';' NL '''
+    '''statement : NAME goal subjects ';' '''
     if p[1] == 'min':
         goal = 'min'
     elif p[1] == 'max':
@@ -134,6 +134,25 @@ def p_statement_assign(p):
     # print("b matrix", b_matrix)
     # print("a matrix", a_matrix)
     p[0] = [a_matrix, b_matrix, c_matrix]
+
+    variables = set([])
+    slack_variables = set([])
+    list_variables = []
+    list_slack_variables = []
+    x_matrix = []
+    c_matrix = []
+    b_matrix = []
+    a_matrix = [[]]
+
+    global counter
+    counter = 0
+
+    global variable_factors_matrix
+    variable_factors_matrix = []
+    global variable_factors_row
+    variable_factors_row = list([])
+    global goal_factors_row
+    goal_factors_row = []
 
 
 def p_statement_goal(p):
@@ -264,3 +283,16 @@ def parse_problem(s):
     import ply.yacc as yacc
     parser = yacc.yacc(debug=False, write_tables=False)
     return parser.parse(s)
+
+import ply.yacc as yacc
+yacc.yacc(debug=True)
+
+while 1:
+    try:
+        s = raw_input('splex > ')
+    except EOFError:
+        break
+    if not s:
+        continue
+    sa = yacc.parse(s)
+    print sa
