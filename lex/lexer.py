@@ -82,7 +82,7 @@ start = 'statement'
 
 
 def p_statement_assign(p):
-    '''statement : NAME goal subjects ';' '''
+    '''statement : NAME goal subjects ';' NL '''
     if p[1] == 'min':
         goal = 'min'
     elif p[1] == 'max':
@@ -284,15 +284,15 @@ def parse_problem(s):
     parser = yacc.yacc(debug=False, write_tables=False)
     return parser.parse(s)
 
-import ply.yacc as yacc
-yacc.yacc(debug=True)
-
-while 1:
-    try:
-        s = raw_input('splex > ')
-    except EOFError:
-        break
-    if not s:
-        continue
-    sa = yacc.parse(s)
-    print sa
+# import ply.yacc as yacc
+# yacc.yacc(debug=True)
+#
+# while 1:
+#     try:
+#         s = raw_input('splex > ')
+#     except EOFError:
+#         break
+#     if not s:
+#         continue
+#     sa = yacc.parse(s)
+#     print sa
