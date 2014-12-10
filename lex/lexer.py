@@ -82,7 +82,7 @@ start = 'statement'
 
 
 def p_statement_assign(p):
-    '''statement : NAME goal subjects ';' NL '''
+    '''statement : NAME goal subjects ';' '''
     if p[1] == 'min':
         goal = 'min'
     elif p[1] == 'max':
@@ -100,14 +100,12 @@ def p_statement_assign(p):
     a_matrix = [[0 for x in range(len(list_variables) + len(list_slack_variables))] for x in range(len(b_matrix))]
     for row_index, row in enumerate(variable_factors_matrix):
         for col_index, (value, key) in enumerate(row):
-            index = -1
             try:
                 index = list_variables.index(key)
             except ValueError:
                 index = -1
             if index >= 0:
                 a_matrix[row_index][index] = value
-            index = -1
             try:
                 index = list_slack_variables.index(key)
             except ValueError:
@@ -116,7 +114,6 @@ def p_statement_assign(p):
                 a_matrix[row_index][len(list_variables) + index] = value
     c_matrix = [0 for x in range(len(list_variables) + len(list_slack_variables))]
     for (value, key) in goal_factors_row:
-        index = -1
         try:
             index = list_variables.index(key)
         except ValueError:
@@ -133,7 +130,12 @@ def p_statement_assign(p):
     # print("c matrix", c_matrix)
     # print("b matrix", b_matrix)
     # print("a matrix", a_matrix)
-    p[0] = [a_matrix, b_matrix, c_matrix]
+    list_variables.insert(0, list_variables.pop())
+    for i in xrange(0, len(a_matrix)):
+        a_matrix[i].insert(0, a_matrix[i].pop(len(list_variables) - 1))
+    c_matrix.insert(0, c_matrix.pop(len(list_variables) - 1))
+
+    p[0] = [a_matrix, b_matrix, c_matrix, list_variables]
 
     variables = set([])
     slack_variables = set([])
@@ -198,8 +200,8 @@ def p_statement_subject(p):
         variable_factors_row.append((float(-1) , slack_name) )
         slack_variables.add(slack_name)
         counter += 1
-    global variable_factors_matrix
-    if variable_factors_row != []:
+    # global variable_factors_matrix
+    if variable_factors_row:
         variable_factors_matrix.append(variable_factors_row)
     variable_factors_row = []
 

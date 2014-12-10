@@ -3,12 +3,14 @@ from django.core.exceptions import PermissionDenied
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from django.contrib import messages
+# from django.contrib import messages
 
 from frontend.forms import *
 from frontend.tasks import *
 
 # %matplotlib inline
+import copy
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 # from matplotlib import get_current_fig_manager
@@ -108,50 +110,57 @@ def problem_view(request, problem_id):
     if problem.user_id != user and not user.is_superuser:
         raise PermissionDenied
 
-    # fig, ax = plt.subplots()
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    vertics = [
-        (1, 1),
-        (1, 2),
-        (2, 2),
-        (2, 1),
-        (1, 1),
-    ]
-    codes = [
-        Path.MOVETO,
-        Path.LINETO,
-        Path.LINETO,
-        Path.LINETO,
-        Path.CLOSEPOLY,
-    ]
-    path = Path(vertics, codes)
-    patch = patches.PathPatch(path, facecolor='orange', lw=2)
-    ax.add_patch(patch)
-    ax.set_xlim(-1, 3)
-    ax.set_ylim(-1, 3)
-    xs, ys = zip(*vertics)
-    ax.plot(xs, ys, 'x-', lw=2, color='black', ms=10)
-    ax.plot([2, 0], [0, 2], 'k--', lw=1)
-    ax.plot([0], [0], 'w,', lw=1)
-    ax.set_xlabel('X axis')
-    ax.set_ylabel('Y axis')
-    ax.set_title('2D Plot of the Problem!', size=14)
-    plugins.clear(fig)
-    plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
-    figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
-
     parse_error = False
     a = None
     b = None
     c = None
     result = None
+    figure = None
     parse_result = parse_problem(problem.problem_text)
     print parse_result
     if parse_result is not None:
-        a, b, c = parse_result
-        if a and b and c:
-            result = simple_simplex(a, b, c)
+        a, b, c, x = parse_result
+        if a and b and c and x:
+            print x
+            result = simple_simplex(copy.deepcopy(a), copy.deepcopy(b), copy.deepcopy(c))
+
+            if len(x) is 2:
+                shape_a = np.array([[a[0][0], a[1][0]], [a[0][1], a[1][1]]])
+                shape_b = np.array([b[1], b[2]])
+                shape_x = np.linalg.solve(shape_a, shape_b)
+                print shape_x
+                # fig, ax = plt.subplots()
+                fig = plt.figure()
+                ax = fig.add_subplot(111)
+                vertics = [
+                    (1, 1),
+                    (1, 2),
+                    (2, 2),
+                    (2, 1),
+                    (1, 1),
+                ]
+                codes = [
+                    Path.MOVETO,
+                    Path.LINETO,
+                    Path.LINETO,
+                    Path.LINETO,
+                    Path.CLOSEPOLY,
+                ]
+                path = Path(vertics, codes)
+                patch = patches.PathPatch(path, facecolor='orange', lw=2)
+                ax.add_patch(patch)
+                ax.set_xlim(-1, 3)
+                ax.set_ylim(-1, 3)
+                xs, ys = zip(*vertics)
+                ax.plot(xs, ys, 'x-', lw=2, color='black', ms=10)
+                ax.plot([2, 0], [0, 2], 'k--', lw=1)
+                ax.plot([0], [0], 'w,', lw=1)
+                ax.set_xlabel('X axis')
+                ax.set_ylabel('Y axis')
+                ax.set_title('Plot of 2D Problem!', size=14)
+                plugins.clear(fig)
+                plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
+                figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
     else:
         parse_error = True
 
