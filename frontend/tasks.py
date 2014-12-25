@@ -9,8 +9,12 @@ from optimization.simplex import simple_simplex
 
 @task
 def solve_problem(problem):
-    a, b, c = parse_problem(problem.problem_text)
-    result = simple_simplex(a, b, c)
+    parse_result = parse_problem(problem.problem_text)
+    print parse_result
+    if parse_result is not None:
+        a, b, c, x = parse_result
+        if a and b and c and x:
+            result = simple_simplex(a, b, c)
     print result
 
     return problem.problem_text
