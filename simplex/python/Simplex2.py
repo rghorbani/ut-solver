@@ -97,7 +97,6 @@ def simple_simplex(A,c,b,x,basics,is_max):
         print (pivot_column_index)
         print (pivot_row_index)
         basics[pivot_row_index-1] = x[pivot_column_index]
-        
 		#print pivot_row_index
         if(pivot_row_index == -1):
             print ("No move to Feasible Region")
@@ -105,6 +104,7 @@ def simple_simplex(A,c,b,x,basics,is_max):
         s.gauss_operations(n,m,pivot_column_index,pivot_row_index)
     print("is Optimum point")
         #is Optimum Point
+
 
 def phase2_simplex(A,c,b,x,basics,is_max):
     n = len(c)
@@ -120,8 +120,12 @@ def phase2_simplex(A,c,b,x,basics,is_max):
         if (pivot_column_index == -1):
             break ;
         pivot_row_index = s2.find_pivot_row_index(n,m,pivot_column_index)
+        #print "@@@@@@@@@@@@"
         print (pivot_column_index)
         print (pivot_row_index)
+        #print x
+        #print "!!!!!!!!!!!!!"
+        #print basics
         basics[pivot_row_index-1] = x[pivot_column_index]
         
 		#print pivot_row_index
@@ -161,12 +165,17 @@ def two_phase_simplex(A,c,b,x,slags,slag_constraint_number,virtuals , virtual_co
     print ("basics1=  " , basics1)
     simple_simplex(A,c1,b,x,basics1 , 0 )
 
+
     if (c1[len(c1)-1] != 0 ):
         print ("not Find feasible region")
     else:
-        basics1_str = [x[1:] for x in basics1]
+        print ('out_basic', basics1)
+        basics1_str = [y[1:] for y in basics1]
+        print "x :" , x
         print ('out ', basics1_str)
+        
         basics1_int = [int(s) for s in basics1_str if s.isdigit()]
+
         #Phase#2
         c.append(0)
         print ("Pashe #2")
@@ -204,7 +213,7 @@ def two_phase_simplex(A,c,b,x,slags,slag_constraint_number,virtuals , virtual_co
                        A[j][p] -= temp[p]
             #print_matrix (A)
         print ('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-        print ('normilized Phase#2')
+        print ('normalized Phase#2')
         #print_matrix(A)
         #print (c)
         b2 = column(A,len(A[0])-1)
