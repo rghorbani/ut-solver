@@ -121,7 +121,6 @@ def problem_view(request, problem_id):
     if parse_result is not None:
         a, b, c, x = parse_result
         if a and b and c and x:
-            print x
             result = simple_simplex(copy.deepcopy(a), copy.deepcopy(b), copy.deepcopy(c))
             b.pop(0)
             a_copy = copy.deepcopy(a)
@@ -129,20 +128,13 @@ def problem_view(request, problem_id):
 
             if len(x) is 2:
                 tmp = [0, 0]
-                # for i in range(0, len(c)):
-                #     tmp.append(0)
                 tmp[1] = 1
                 a.insert(0, copy.deepcopy(tmp))
-                print(a)
                 tmp[0] = 1
                 tmp[1] = 0
                 a.insert(0, copy.deepcopy(tmp))
-                print(a)
                 b.insert(0, 0)
                 b.insert(0, 0)
-                print '----------'
-                print(a)
-                print(b)
                 dots = []
                 for i in range(len(b)):
                     dots.append([])
@@ -151,63 +143,25 @@ def problem_view(request, problem_id):
                     for j in xrange(i + 1, len(b)):
                         if a[i][0] == a[j][0] and a[i][1] == a[j][1]:
                             continue
-                        # print([[a[i][0], a[i][1]], [a[j][0], a[j][1]]])
-                        # print([b[i], b[j]])
                         shape_a = np.array([[a[i][0], a[i][1]], [a[j][0], a[j][1]]])
                         shape_b = np.array([b[i], b[j]])
-                        # print '---'
-                        # print(shape_a)
-                        # print(shape_b)
                         res = np.linalg.solve(shape_a, shape_b)
                         dots[i].append(res)
                         dots[j].append(res)
-                        # shape_x.append(res)
-                        # print shape_x
                 # fig, ax = plt.subplots()
                 fig = plt.figure()
                 ax = fig.add_subplot(111)
-                # vertics = []
-                for sh in dots:
-                    print sh
-                #     vertics.append((sh[0], sh[1]))
-                vertics = [
-                    (1, 1),
-                    (1, 2),
-                    (2, 2),
-                    (2, 1),
-                    (1, 1),
-                ]
-                codes = [
-                    Path.MOVETO,
-                    Path.LINETO,
-                    Path.LINETO,
-                    Path.LINETO,
-                    Path.CLOSEPOLY,
-                    ]
-                path = Path(vertics, codes)
-                patch = patches.PathPatch(path, facecolor='orange', lw=2)
-                # ax.add_patch(patch)
-                # ax.set_xlim(-1, 3)
-                # ax.set_ylim(-1, 3)
-                xs, ys = zip(*vertics)
-                # ax.plot(xs, ys, 'x-', lw=2, color='black', ms=10)
-                print(len(dots))
                 for dot in dots:
-                    ax.plot(dot[0], dot[1], ls='-', color='green', marker='o', lw=1)
-                    print([dot[0], dot[1]])
-                    # for i in range(0, len(dot)):
-                    #     for j in range(i + 1, len(dot)):
-                            # ax.plot(dot[i], dot[j], 'k-', lw=1)
-                            # print '-'
-                # ax.plot([2, 0], [0, 2], 'k--', lw=1)
-                # ax.plot([0, 0], [0, 5], 'w,', lw=1)
-                # ax.plot([0, 0], [5, 0], 'w,', lw=1)
+                    ax.plot([float(dot[0][0]), float(dot[1][0])], [float(dot[0][1]), float(dot[1][1])], ls='-', color='green', marker='o', lw=2)
+                    # print([dot[0], dot[1]])
                 ax.set_xlabel('X axis')
                 ax.set_ylabel('Y axis')
                 ax.set_title('Plot of 2D Problem!', size=14)
                 plugins.clear(fig)
                 plugins.connect(fig, plugins.Reset(), plugins.Zoom(enabled=True), plugins.BoxZoom())
                 figure = fig_to_html(fig, d3_url=STATIC_URL + 'js/d3.min.js', mpld3_url=STATIC_URL + 'js/mpld3.v0.2.js', use_http=True)
+            else:
+                figure = 'Larger than 2D!'
     else:
         parse_error = True
 
