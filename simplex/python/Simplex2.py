@@ -86,7 +86,7 @@ def simple_simplex(A,c,b,x,basics,is_max):
     s = Simplex(A,c,b,x,basics)
     s.printItself() 
     while(True):
-        print (basics)
+        #print (basics)
         if(is_max):
             pivot_column_index = s.find_pivot_column_index_max(n)
         else:
@@ -94,8 +94,8 @@ def simple_simplex(A,c,b,x,basics,is_max):
         if (pivot_column_index == -1):
             break ;
         pivot_row_index = s.find_pivot_row_index(n,m,pivot_column_index)
-        print (pivot_column_index)
-        print (pivot_row_index)
+        #print (pivot_column_index)
+        #print (pivot_row_index)
         basics[pivot_row_index-1] = x[pivot_column_index]
 		#print pivot_row_index
         if(pivot_row_index == -1):
@@ -111,8 +111,10 @@ def phase2_simplex(A,c,b,x,basics,is_max):
     m = len(A)
     s2 = Simplex(A,c,b,x,basics)
     s2.printItself() 
+    print "before while" , x
+    print "before basics :" , basics
     while(True):
-        print (basics)
+        #print (basics)
         if(is_max):
             pivot_column_index = s2.find_pivot_column_index_max(n)
         else:
@@ -126,7 +128,7 @@ def phase2_simplex(A,c,b,x,basics,is_max):
         #print x
         #print "!!!!!!!!!!!!!"
         #print basics
-        basics[pivot_row_index-1] = x[pivot_column_index]
+        basics[pivot_row_index-1] = pivot_column_index +1
         
 		#print pivot_row_index
         if(pivot_row_index == -1):
@@ -134,6 +136,10 @@ def phase2_simplex(A,c,b,x,basics,is_max):
             break ;
         s2.gauss_operations(n,m,pivot_column_index,pivot_row_index)
     print("is Optimum point")
+    print "after while" , x
+    print "basics :" , basics
+    #print "b" 
+    print "solution" , c[len(c)-1]
         #is Optimum Point
 
 def column(matrix, i):
@@ -142,6 +148,8 @@ def pop_column(matrix, j):
     for i in range(len(matrix)):
         matrix[i].pop(j)
     return matrix
+
+
 def two_phase_simplex(A,c,b,x,slags,slag_constraint_number,virtuals , virtual_constraint_number ,is_max ):
     c1 = [0] * (len(c)-len(virtuals))
     basics1 = [0] * (len(b)-1)
