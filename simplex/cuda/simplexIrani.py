@@ -4,13 +4,9 @@ from pycuda.compiler import SourceModule
 from pycuda import gpuarray, compiler
 
 
-def compute_cuda_simplex(matrix ):
-    print matrix
-    matrix = numpy.array(matrix , copy=True , dtype=float)
-    columnK = numpy.zeros(shape=(m+1)).astype(numpy.float32)
-    teta = numpy.zeros(shape=(m+1)).astype(numpy.float32)
+def compute_cuda_simplex(matrix ,  basics_index ):
     SourceModule = ("""
-    __global__ void kernel1(float simplex[((%(M)s/16)+1)*16][((%(N)s/32)+1)*32] , float* teta , float* columnK , int k ){
+    __global__ void kernel1(float simplex[%(M)s][%(N)s] , float* teta , float* columnK , int k ){
         int idx = blockDim.x * blockIdx.x + threadIdx.x ;
         float w = simplex[idx][k] ;
         /* copy the weights of entering index k */
@@ -18,7 +14,8 @@ def compute_cuda_simplex(matrix ):
         teta[idx] = simplex[idx][0]/w;
     }
 
-    __global__ void kernel2(float simplex[((%(M)s/16)+1)*16][((%(N)s/32)+1)*32] , float* columnK ,  int k , int r){
+
+    __global__ void kernel2(float simplex[%(M)s][%(N)s] , float* columnK ,  int k , int r){
         int idx = blockDim.y * blockIdx.y + threadIdx.y;
         __shared__ float w;
         /* Get the pivot element : simplex[r][k] in the shared memory */
@@ -29,7 +26,7 @@ def compute_cuda_simplex(matrix ):
     }
 
 
-    __global__ void kernel3(float simplex[((%(M)s/16)+1)*16][((%(N)s/32)+1)*32] , float* columnK , int k , int r){
+    __global__ void kernel3(float simplex[%(M)s][%(N)s] , float* columnK , int k , int r){
         int idx = blockDim.y * blockIdx.y + threadIdx.y;
         int jdx = blockIdx.x * blockDim.x + threadIdx.x;
         __shared__ float w[16];
@@ -46,9 +43,7 @@ def compute_cuda_simplex(matrix ):
     }
 
 
-
-
-    __global__ void kernel4(float simplex[((%(M)s/16)+1)*16][((%(N)s/32)+1)*32] , float*  columnK , int k , int r){
+    __global__ void kernel4(float simplex[%(M)s][%(N)s] , float*  columnK , int k , int r){
         int jdx = blockDim.x*blockIdx.x + threadIdx.x;
         __shared__ float w;
         /* Get the pivot element : simplex[r][k] in the shared memeory */
@@ -61,32 +56,34 @@ def compute_cuda_simplex(matrix ):
         if(jdx == r) simplex[jdx][k] = 1/w;
     }
       """)
+    
+    h = int((numpy.shape(matrix)[0]) / 16) 
+    w = int((numpy.shape(matrix)[1]) / 32) 
 
-    matrix_gpu  = gpuarray.to_gpu( matrix)
+    columnK = numpy.zeros(shape=(16*h)).astype(numpy.float32)
+    teta = numpy.zeros(shape=(16*h)).astype(numpy.float32)
+    matrix_gpu  = gpuarray.to_gpu(matrix)
     teta_gpu = gpuarray.to_gpu(teta)
     columnK_gpu = gpuarray.to_gpu(columnK)
+    # basics_index = []
+
     counter = 0
-
-    #width = GaussJordan.shape[0]
-    #length = GaussJordan.shape[1]
-
-    width = m
-    length = n;
-    print "width:", width
-    print "length:",length
-    print "matrix shape: ",matrix
+    
 
     SourceModule_e = SourceModule%{
-        'N' : length + width + 1,
-        'M' : width + 1,
-
+        'N' : w * 32,
+        'M' : h * 16,
     }
-
+    row = matrix_gpu.get()[0]
     while(True):
-        print "counter :" , counter
+        k = 0 
+        r = 0
+        print "iterate :" , counter
+        
+        print "r :" , basics_index
         counter+=1
-        print matrix_gpu.get()
-        row = matrix_gpu.get()[0]
+        # print matrix_gpu.get()
+        # row = matrix_gpu.get()[0]
         minimum = 0
         i  = 0 
         # Find the index of entering variable k
@@ -94,31 +91,27 @@ def compute_cuda_simplex(matrix ):
             if item < minimum :
                 minimum = item
                 k = i
+                row[i] = 0
             i = i + 1
-        if minimum == 0 :
-            print "solution is here\n" , matrix_gpu.get()
-            break
+        if minimum >= 0 :
+            solution = matrix_gpu.get()[0][0]
+            basics_value = matrix_gpu.get()[1:,0]
+            A = matrix_gpu.get()[1:,1:]
+            return { "A" : A , "solution" : solution , "basics_value" : basics_value , "basics_index" : basics_index}
 
         mod = compiler.SourceModule(SourceModule_e)
         kernel1 = mod.get_function("kernel1")
-        h = int(((m+1) / 32) + 1)
-        w = int(( (n + 1) / 16) + 1)
         print "k : " , k
         kernel1(matrix_gpu , teta_gpu ,  columnK_gpu , numpy.int32(k) , block=(16 , 32 ,1 ) ,
          grid=(h , w  , 1))
 
-        #find the index of leaving variable r
-    #    print " teta " , teta
-
-    #    print " gpu " , teta_gpu.get() 
-    #    matrix_gpu = matrix_gpu.get()
-        print "kernel1 out GausJordan\n" ,matrix_gpu.get()
+        # print "kernel1 out matrix\n" ,matrix_gpu.get()
 
         flag = False
         minimum = -1
-        print "i :" , i
-        print "k :" , k
-        print "teta_gpu:\n", teta_gpu.get()
+        # print "i :" , i
+        # print "k :" , k
+        # print "teta_gpu:\n", teta_gpu.get()
         i = 0 
         for i in range (0 , m + 1):
             if minimum == -1 and teta_gpu.get()[i] > 0:
@@ -134,34 +127,27 @@ def compute_cuda_simplex(matrix ):
 
 
         kernel2 = mod.get_function("kernel2")
-        print "kernel1 out GausJordan\n" ,matrix_gpu.get()
-        h = int(((m+1) / 32) + 1)
-        w = int(( (n + 1) / 16) + 1)
+        # print "kernel1 out matrix\n" ,matrix_gpu.get()
         kernel2(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) , 
             grid=( h , w  , 1))
-    #    h = int(((m+1) / 16) + 1)
-    #    w = int(( (n + 1) / 32) + 1)
-        h = int(((m+1) / 32) + 1)
-        w = int(( (n + 1) / 16) + 1)
-        print "r :" , r
-        print "kernel2 out GausJordan\n" ,matrix_gpu.get()
+
+        # print "r :" , r
+        # print "kernel2 out matrix\n" ,matrix_gpu.get()
         kernel3 = mod.get_function("kernel3")
 
         kernel3(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) ,
          grid=(h , w , 1))
-        h = int(((m+1) / 32) + 1)
-        w = int(( (n + 1) / 16) + 1)
-        print "kernel3 out GausJordan\n" ,matrix_gpu.get()
+
+        # print "kernel3 out matrix\n" ,matrix_gpu.get()
         kernel4 = mod.get_function("kernel4")
         kernel4(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) ,
          grid=(h , w , 1))
-        print "kernel4 out GausJordan\n" ,matrix_gpu.get()
-        if counter>1:
-            break
+        # print "kernel4 out matrix\n" ,matrix_gpu.get()
+        basics_index[r-1] = k + 1
 
 
 
-def cuda_simplex(A , B , C):
+def cuda_simplex(A , B , C , basics):
     m = len(A)
     if m <= 0 :
         return
@@ -173,14 +159,16 @@ def cuda_simplex(A , B , C):
         A[i] = [B[i]] + A[i]
 
     print "glhglkh" ,A    
-    compute_cuda_simplex(A)
+    ccs = compute_cuda_simplex(A , basics)
+    return {"A": ccs["A"] , "B" : ccs["basics_value"] , "basics":ccs["basics_index"]}
+
 
 def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, slacks_constraint_num , slacks_indices ):
 #def find_feasible_point(A, B, C, virtuals_indices, slacks_indices):
     feasible_point = numpy.zeros(len(C))
 
     if len(virtuals_indices) == 0 :
-        return cuda_simplex(A , B , C)
+        return cuda_simplex(A , B , C , slacks)
     else:
         CBasic = C
         C = [0] * (len(C)-len(virtuals_constraints_num)) # C = [0,0,0,0,0]
@@ -203,8 +191,13 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, slacks
         print "Basic:",basics # basics = [6,7,5]
         print "constraint:",C # C = [0,2,-1,-1,0,0,0]
         # phase #1 Simplex
-        cuda_simplex(A , B , C)########?????????????????????????????????
+        ret = cuda_simplex(A , B , C , basics)########?????????????????????????????????
+        A = ret["A"]
+        B = ret ["B"]
+        basics = ret["basics"]
+
         #farz : A, B, C , basics avaz shodand 
+        
         #basics = [1,2,5]
 
         if (abs(C[len(C)-1]) >= 0.0001 ):# x6+x7 !=0
