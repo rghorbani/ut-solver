@@ -29,7 +29,9 @@ ADMINS = (('Reza', 'r.ghorbani.f@gmail.com'),)
 
 ALLOWED_HOSTS = [
     '.troplat.ir',
-    '.troplat.ir.'
+    '.troplat.ir.',
+    '.localhost',
+    '.localhost.'
 ]
 
 
