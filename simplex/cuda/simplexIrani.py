@@ -161,12 +161,12 @@ def compute_cuda_simplex(matrix ):
 
 
 
-def uni_phase_simplex(A , B , C):
+def cuda_simplex(A , B , C):
     m = len(A)
     if m <= 0 :
         return
     n = len(A[0])
-    B = [0] + B
+    #B = [0] + B
     A = [C] + A
     for i in range (0 , m +1 ):
         print B[i]
@@ -175,106 +175,102 @@ def uni_phase_simplex(A , B , C):
     print "glhglkh" ,A    
     compute_cuda_simplex(A)
 
-def cuda_simplex(+):
+def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, slacks_constraint_num , slacks_indices ):
 #def find_feasible_point(A, B, C, virtuals_indices, slacks_indices):
     feasible_point = numpy.zeros(len(C))
 
     if len(virtuals_indices) == 0 :
-        uni_phase_simplex(A,B,C)
+        return cuda_simplex(A , B , C)
     else:
-        C_phase_1 = [0] * (len(C)-len(virtuals_constraints_num))
-        basics = [0] * (len(B)-1)
+        CBasic = C
+        C = [0] * (len(C)-len(virtuals_constraints_num)) # C = [0,0,0,0,0]
+        basics = [0] * (len(B)-1) # basics= [0,0,0]
         for i in range(len(virtuals_indices)):
-            C_phase_1.append(-1)
-        print (" C=  " , C_phase_1)
+            C.append(-1)
+        print (" C=  " , C) # C= [0,0,0,0,0,-1,-1]
         for i in range(len(virtuals_constraints_num)):
             for j in range(len(C)):
-                C_phase_1[j] +=  A[virtuals_constraints_num[i]-1][j]
-            print (" C=  " , C_phase_1)
+                C [j] +=  A[virtuals_constraints_num[i]-1][j]
             B[0] += B[virtuals_constraints_num[i]]
             basics [virtuals_constraints_num[i]-1] = virtuals_indices[i]
-
+        print (" C=  " , C )# C= [0,2,-1,-1,0,0,0] C kanooni shode
+        # B[0] = 3
+        # basics = [6,7,0]
         for i in range(len(slacks_constraint_num)):
             if(basics[slacks_constraint_num[i]-1] == 0 ):
                 basics[slacks_constraint_num[i]-1] = slacks_indices[i]
         print ("Normilized Phase#1")
+        print "Basic:",basics # basics = [6,7,5]
+        print "constraint:",C # C = [0,2,-1,-1,0,0,0]
+        # phase #1 Simplex
+        cuda_simplex(A , B , C)########?????????????????????????????????
+        #farz : A, B, C , basics avaz shodand 
+        #basics = [1,2,5]
 
-        for i in range(len(C_phase_1)):
-            C_phase_1[i] *= -1
-        print "Basic:",basics
-        print "constraint:",C_phase_1
-        print "B:",B
-        uni_phase_simplex(A,B,C_phase_1)
-
-        if (C_phase_1[len(C_phase_1)-1] != 0 ):
-            print ("not Find feasible region")
+        if (abs(C[len(C)-1]) >= 0.0001 ):# x6+x7 !=0
+            print ("not Find feasible region in Phase 1")
         else:
-            basics1_int = basics
-            #Phase#2
+            # start phase #2 Simplex
+            C = CBasic
             C.append(0)
-            print ("Pashe #2")
-            print_matrix(A)
-            print ('c',C)
-            print ('basics',basics1_int)
-            print('b',B)
-            for i in range (len(basics1_int)):
-                #print ('basic is ' ,A[i][basics1_int[i]-1])
-                if(C[basics1_int[i]-1] != 0):
-                    piv = C[basics1_int[i]-1] / A[i][basics1_int[i]-1]
+            # C = [-1,2,0,0,0,0,0,0] 
+            for i in range (len(basics)):
+                if(C[basics[i]-1] != 0):
+                    piv = C[basics[i]-1] / A[i][basics[i]-1]
                 else:
                     piv = 0 ;
-                #print ('pivot' , piv)
+                # piv (i = 0) => -1
+                # piv (i = 1) => 2
+                # piv (i = 2) => 0
                 temp = []
-                for k in range(len(A[i])):
+                for k in range(len(A[i])): 
                     temp.append( A[i][k] * piv)
-                #print ('temp' , temp)
                 for p in range(len(A[i])):
                     C[p] -= temp[p]
-                #print ('##### C ' , c) 
-                for j in range (len(basics1_int)):
-                   #print ('j' , j)
+                # C[all basics] = 0
+                # C = [0,0,1/2,3/2,0,0,0,-5/2]
+                for j in range (len(basics)):
                    if (j!=i):
-                       if(A[i][basics1_int[i]-1] != 0):
+                       if(A[i][basics[i]-1] != 0):
                            piv = A[j][basics1_int[i]-1] / A[i][basics1_int[i]-1]
                        else:
                            piv = 0 ;
-                       #print ('pivot' , piv)
                        temp = []
                        for k in range(len(A[i])):
                            temp.append( A[i][k] * piv)
-                       #print ('temp' , temp)
                        for p in range(len(A[i])):
                            A[j][p] -= temp[p]
-                #print_matrix (A)
-            print ('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
             print ('normilized Phase#2')
-            #print_matrix(A)
-            #print (c)
             b2 = column(A,len(A[0])-1)
-            c_temp = C[len(C)-1]
+            c_temp = c[len(c)-1]
             b2.insert(0,c_temp)
-            C.pop(len(C)-1)
+            c.pop(len(c)-1)
             A2 = pop_column(A,len(A[0])-1)
+            virtual_str = [x[1:] for x in virtuals]
+            virtual_int = [int(s) for s in virtual_str if s.isdigit()]
+            virtual_int.reverse()
+            for i in range(len(virtual_int)):
+                A2 = pop_column(A2,virtual_int[i]-1)
+                c.pop(virtual_int[i]-1)
+            basics2 = [0] * len(basics1_int)
+            for i in range(len(basics1_int)):
+                basics2[i] = 'x' + str( basics1_int[i])
             print_matrix (A2)
-            print ( C)
-            print ( b2 )
-            print (basics1_int)
+            print (c)
+            print(b2)
+            print(basics2)
+            simple_simplex(A2,c,b2,x,basics2,is_max )
 
-            uni_phase_simplex(A,B,C)
-        return
+    return
 
 
 n = 2
 m = 3
 
-#C = -1 * [ 15 , 10]
-#B = [ 2 , 3 , 4]
-#A = [[1 , 0], [0 , 1]  , [1 , 1]]
-#x = ['x1','x2']
-#virtuals_indices=[]
-#virtuals_constraints_num=[]
-#slacks_constraint_num=[1,2,3]
-#slacks_indices=[3 , 4, 5]
+C = -1 * [ 15 , 10]
+B = [ 2 , 3 , 4]
+A = [[1 , 0], [0 , 1]  , [1 , 1]]
+
 
 A = [[1,1,-1,0,0,1,0],[-1,1,0,-1,0,0,1],[0,1,0,0,1,0,0]]
 C = [-1,2,0,0,0,0,0]
@@ -287,8 +283,8 @@ slacks_indices=[3 , 4, 5]
 
 
 #find_feasible_point(A, B, C, virtuals_indices, slacks_indices)
-cuda_simplex(A,B,C,virtuals_constraints_num, virtuals_indices, slacks_constraint_num , slacks_indices )
-#uni_phase_simplex(A,B,C)
+find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, slacks_constraint_num , slacks_indices )
+
 #cuda_simplex(A , B , C)
 
 
@@ -333,7 +329,7 @@ matrix[3][0] = 4
 matrix[3][1] = 1
 matrix[3][2] = 1
 
-#print "booogh" , matrix 
+print "booogh" , matrix 
 
 # # matrix[0][0] = 3
 # # matrix[0][1] = 2
