@@ -114,6 +114,8 @@ def problem_view(request, problem_id):
     a = None
     b = None
     c = None
+    a_copy = None
+    b_copy = None
     result = None
     figure = None
     parse_result = parse_problem(problem.problem_text)
