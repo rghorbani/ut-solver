@@ -184,6 +184,7 @@ def two_phase_simplex(A,c,b,x,slacks,slack_constraint_number,virtuals , virtual_
         b2.insert(0,c_temp)
         c.pop(len(c)-1)
         A2 = pop_column(A,len(A[0])-1)
+        print "virtuals" , virtuals
         virtual_str = [x[1:] for x in virtuals]
         virtual_int = [int(s) for s in virtual_str if s.isdigit()]
         virtual_int.reverse()
