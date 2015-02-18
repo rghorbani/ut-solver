@@ -4,6 +4,8 @@ from pycuda.compiler import SourceModule
 from pycuda import gpuarray, compiler
 
 
+
+
 def compute_cuda_simplex(matrix , x_list , basics ):
     SourceModule = ("""
     __global__ void kernel1(float simplex[%(M)s][%(N)s] , float* teta , float* columnK , int k ){
