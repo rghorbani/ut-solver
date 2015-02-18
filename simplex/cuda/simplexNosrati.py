@@ -57,7 +57,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         if(jdx == r) simplex[jdx][k] = 1;
     }
       """)
-    
+    # print "booooooogh" , slacks_indices
     h = int((numpy.shape(matrix)[0]) / 16) 
     w = int((numpy.shape(matrix)[1]) / 32) 
 
@@ -84,7 +84,6 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         r = 0
         # print "matrix : \n" , matrix
         #print "iterate :" , counter
-        
         #print "basics_index :" , basics_index
         counter+=1
         #print "boogh \n" ,  matrix_gpu.get()
@@ -108,8 +107,9 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
                 solution = matrix_gpu.get()[0][0]
                 basics_value = matrix_gpu.get()[1:,0]
                 A = matrix_gpu.get()[1:,1:]
-                print " before return \n" , matrix_gpu.get()
-                return { "A" : A , "solution" : solution , "basics_value" : basics_value , "basics_index" : basics_index}
+                #print " before return \n" , matrix_gpu.get()
+                return { "A" : A , "solution" : solution , 
+                "basics_value" : basics_value , "basics_index" : basics_index}
             #print "minimum" , minimum
 
         else:
@@ -129,8 +129,9 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
                 solution = matrix_gpu.get()[0][0]
                 basics_value = matrix_gpu.get()[1:,0]
                 A = matrix_gpu.get()[1:,1:]
-                print " before return \n" , matrix_gpu.get()
-                return { "A" : A , "solution" : solution , "basics_value" : basics_value , "basics_index" : basics_index}
+                #print " before return \n" , matrix_gpu.get()
+                return { "A" : A , "solution" : solution , "basics_value" : basics_value , 
+                "basics_index" : slacks_indices}
             #print "maximum" , maximum
 
         mod = compiler.SourceModule(SourceModule_e)
@@ -139,13 +140,13 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         kernel1(matrix_gpu , teta_gpu ,  columnK_gpu , numpy.int32(k) , block=(16 , 32 ,1 ) ,
          grid=(h , w  , 1))
 
-        print "kernel1 out matrix\n" ,matrix_gpu.get()
+        #print "kernel1 out matrix\n" ,matrix_gpu.get()
 
         flag = False
         minimum = -1
         # print "i :" , i
-        print "k :" , k
-        print "teta_gpu:\n", teta_gpu.get()
+        ##print "k :" , k
+        #print "teta_gpu:\n", teta_gpu.get()
         i = 0 
         for i in range (1 , h * 16):
             if minimum == -1 and teta_gpu.get()[i] > 0:
@@ -157,10 +158,10 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
                 r = i
         if not flag :
             print "unbounded"
-            print "A : \n" , matrix_gpu.get()
+            #print "A : \n" , matrix_gpu.get()
             break
 
-        print "r is :" , r
+        #print "r is :" , r
         kernel2 = mod.get_function("kernel2")
         # print "kernel1 out matrix\n" ,matrix_gpu.get()
         kernel2(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) , 
@@ -177,8 +178,8 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         kernel4 = mod.get_function("kernel4")
         kernel4(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) ,
          grid=(h , w , 1))
-        print "kernel4 out matrix\n" ,matrix_gpu.get()
-        basics_index[r-1] = k
+        #print "kernel4 out matrix\n" ,matrix_gpu.get()
+        slacks_indices[r-1] = k
 
 
 
@@ -216,19 +217,36 @@ def cuda_simplex(A , B , C , basics , is_max):
                 matrix[i][j] = B[i]
             else:
                 matrix[i][j] = float(A[i][j-1]) 
-    ccs = compute_cuda_simplex(matrix , basics , is_max)
-    print "solution: " ,ccs["solution"]
-    print "basics :" , ccs["basics_index"]
-    print "A :" , ccs["A"]
-    print "B :" , ccs["basics_value"] 
-    return {"A": ccs["A"] , "B" : ccs["basics_value"] , 
-    "basics":ccs["basics_index"] , "solution" : ccs["solution"]}
+    return_collection = compute_cuda_simplex(matrix , basics , is_max)
+    #print "solution: " ,return_collection["solution"]
+    print "basics :" , return_collection["basics_index"]
+    #print "A :" , return_collection["A"]
+    #print "B :" , return_collection["basics_value"] 
+
+    A = return_collection["A"]
+    basics = return_collection["basics_index"]
+    B = return_collection["basics_value"]
+    solution = return_collection["solution"]
+    values = numpy.zeros(len(A[0]))
+    # print "A " , A
+    # print "basics" , basics
+    # print "solution" , solution
+    for i in range(len(A)):
+        if(i >= len(basics)):
+            break
+        values[basics[i] - 1 ] = B[i] / A[i][basics[i]-1]
+    print "dodoo values" ,  values
+    return {"A": A , 
+    "B" : B , 
+    "basics": basics ,
+    "solution" : solution , 
+    "values" : values}
 
 
 def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, 
     slacks_constraint_num , slacks_indices , is_max ):
     feasible_point = numpy.zeros(len(C))
-    print "slacks_indices :" , slacks_indices
+    #print "slacks_indices :" , slacks_indices
     if len(virtuals_indices) == 0 :# Compute cuda in one step
         return cuda_simplex(A , B , C , slacks_indices , is_max)
     else:#Compute cuda in 2 phase
@@ -238,7 +256,7 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
         #create target to minimize the sum of virtual variables
         for i in range(len(virtuals_indices)):
             C = numpy.append(C , [-1.0])
-        print "C is :" , C
+        #print "C is :" , C
 
         # kanooni kardan bar hasb virtual ha 
         for i in range(len(virtuals_constraints_num)):
@@ -257,26 +275,35 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
         A = ret["A"]
         B = ret ["B"]
         basics = ret["basics"]
- 
+        values = ret["values"]
+        
         if (ret["solution"] >= 0.0001 ):# x6+x7 !=0
             print ("not Find feasible region in Phase 1")
         else:
             C = Target
-            C = numpy.append(C , [0.0])
+            while len(A[0]) != len(C):
+                    C = numpy.append(C , [0])
+            target_sum = 0.0
+            for i in range(len(values)):
+                target_sum += values[i] * C[i]
+
             for i in range (len(basics)):
                 if(C[int(basics[i])-1] != 0):
                     piv = C[int(basics[i])-1] / A[i][int(basics[i])-1]
                 else:
                     piv = 0 
                 temp = []
-                print " A  " , len(A) , " A[0]" , len(A[0])
+                #print " A  " , len(A) , " A[0]" , len(A[0])
+                B_i = 0 
                 for k in range(len(A[i])): 
                     temp.append( A[i][k] * piv)
+                    B_i = B[i] * piv
                 len_C = len(C)
-                while len(A[i]) != len(C):
-                    C = numpy.append(C , [0])
+                
                 for p in range( len(A[i]) ):
                     C[p] -= temp[p]
+                
+                target_sum -= B_i
                 for j in range ( len(basics) ):
                    if ( j!=i ):
                        if( A[i][int(basics[i])-1] != 0 ):
@@ -297,14 +324,14 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
                 set_column_zero(A , i)
                 C[i] = 0
             
-            print "basics" , basics
-            print_matrix (A)
-            b2 = numpy.append([0.0] , b2)
-            print "before getting unbounded"
-            print "C:"
-            print (C)
-            print "b2:"
-            print (b2)
+            #print "basics" , basics
+            #print_matrix (A)
+            b2 = numpy.append([target_sum] , b2)
+            #print "before getting unbounded"
+            #print "C:"
+            #print (C)
+            #print "b2:"
+            #print (b2)
             cuda_simplex(A,b2,C,basics,is_max )
     return
 
