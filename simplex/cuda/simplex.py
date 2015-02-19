@@ -257,8 +257,11 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
     if len(virtuals_indices) == 0 :# Compute cuda in one step
         res = cuda_simplex(A , B , C , slacks_indices , is_max)
         final_result = 0.0
+        values = res["values"]
         for i in range(len(values)):
-            final_result += res["values"][i] * final_target[i]
+            C = numpy.append(C , [-1.0])
+        for i in range(len(values)):
+            final_result += res["values"][i] * C[i]
         return { "values" : res["values"] , "result" : final_result}
     else:#Compute cuda in 2 phase
         Target = numpy.copy(C)
