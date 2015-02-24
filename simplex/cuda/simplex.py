@@ -135,8 +135,9 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
                 basics_value = matrix_gpu.get()[1:,0]
                 A = matrix_gpu.get()[1:,1:]
                 #print " before return \n" , matrix_gpu.get()
-                return { "A" : A , "solution" : solution , "basics_value" : basics_value , 
-                "basics_index" : slacks_indices}
+                return { "A" : A , "solution" : solution 
+                , "basics_value" : basics_value , 
+                "basics_index" : basics_index}
             #print "maximum" , maximum
 
         mod = compiler.SourceModule(SourceModule_e)
@@ -150,7 +151,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         flag = False
         minimum = -1
         # print "i :" , i
-        ##print "k :" , k
+        print "k :" , k
         #print "teta_gpu:\n", teta_gpu.get()
         i = 0 
         for i in range (1 , h * 16):
@@ -167,7 +168,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
             #print "A : \n" , matrix_gpu.get()
             break
 
-        #print "r is :" , r
+        print "r is :" , r
         kernel2 = mod.get_function("kernel2")
         # print "kernel1 out matrix\n" ,matrix_gpu.get()
         kernel2(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) , 
@@ -185,7 +186,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         kernel4(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) ,
          grid=(h , w , 1))
         #print "kernel4 out matrix\n" ,matrix_gpu.get()
-        slacks_indices[r-1] = k
+        basics_index[r-1] = k
 
 
 
@@ -214,12 +215,17 @@ def cuda_simplex(A , B , C , basics , is_max):
     if m <= 0 :
         return
     n = len(A[0])
+    print "basics" , len(basics) , "\n" , basics
     A = numpy.concatenate(([C], A), axis=0)
     matrix = numpy.zeros(shape=((round((numpy.shape(A))[0]/16) + 1)*16 ,
         (round((numpy.shape(A))[1]/32) + 1 )*32)).astype(numpy.float32)
+    print "m " , m 
+    print "n " , n
+    print "matrix " , len(matrix) , len(matrix[0])
+    print "B " , len(B)
     for i in range (m +1):
         for j in range (n + 1):
-            if(j == 0 ):
+            if(j == 0 and i < len(B)):
                 matrix[i][j] = B[i]
             else:
                 matrix[i][j] = float(A[i][j-1]) 
@@ -240,7 +246,7 @@ def cuda_simplex(A , B , C , basics , is_max):
     for i in range(len(A)):
         if(i >= len(basics)):
             break
-        values[basics[i] - 1 ] = B[i] / A[i][basics[i]-1]
+        values[int(basics[i] - 1) ] = B[i] / A[i][int(basics[i]-1)]
     # log("values " + str(values))
     # log("solution " + str(solution))
     return {"A": A , 
