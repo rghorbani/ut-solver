@@ -19,8 +19,21 @@ B = numpy.loadtxt("output/b")
 A = numpy.loadtxt("output/a")
 
 
-virtuals_indices=numpy.array([])
-virtuals_constraints_num=numpy.array([])
+# virtuals_indices=numpy.loadtxt("output/virtual_constraint")
+virtuals_constraints_num=numpy.array("output/virtual_constraint")
+
+A_added_virtuals= numpy.zeros(shape=(len(A),(len(A[0]) + len(virtual_constraint))))
+for i in len(A_added_virtuals):
+	for j in len(A[0]):
+		A_added_virtuals[i][j] = A[i][j]
+
+virtuals_indices = []
+k = 0 
+for i in virtual_constraint:
+	A_added_virtuals[i-1][k + len(A[0])] = -1
+	k++
+	virtuals_indices = virtuals_indices + [k + len(A[0])]
+
 slacks_constraint_num=numpy.loadtxt("output/slack_constraints")
 slacks_indices=numpy.loadtxt("output/slack_indexes")
 
