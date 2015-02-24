@@ -155,7 +155,6 @@ def problem_view(request, problem_id):
                         dots[i].append(res)
                         dots[j].append(res)
                 # fig, ax = plt.subplots()
-                plt.show(warn=False)
                 fig = plt.figure()
                 ax = fig.add_subplot(111)
                 for dot in dots:
