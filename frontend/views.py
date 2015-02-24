@@ -11,6 +11,7 @@ from frontend.tasks import *
 # %matplotlib inline
 import copy
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 # from matplotlib import get_current_fig_manager
@@ -18,6 +19,9 @@ import matplotlib.patches as patches
 from mpld3 import fig_to_html, plugins
 from ut_solver.settings import STATIC_URL
 from lex.lexer import parse_problem
+
+
+mpl.use('Agg')
 
 
 def index(request):
