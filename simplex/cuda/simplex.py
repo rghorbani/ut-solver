@@ -89,7 +89,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         #print "iterate :" , counter
         #print "basics_index :" , basics_index
         counter+=1
-        #print "boogh \n" ,  matrix_gpu.get()
+        # print "boogh \n" ,  matrix_gpu.get()
         # log(" i =  " + str(counter) + "matrix :\n" )
         # print_matrix(matrix_gpu.get())
         row = matrix_gpu.get()[0]
@@ -151,7 +151,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         flag = False
         minimum = -1
         # print "i :" , i
-        print "k :" , k
+        # print "k :" , k
         #print "teta_gpu:\n", teta_gpu.get()
         i = 0 
         for i in range (1 , h * 16):
@@ -168,7 +168,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
             #print "A : \n" , matrix_gpu.get()
             break
 
-        print "r is :" , r
+        # print "r is :" , r
         kernel2 = mod.get_function("kernel2")
         # print "kernel1 out matrix\n" ,matrix_gpu.get()
         kernel2(matrix_gpu , columnK_gpu , numpy.int32(k), numpy.int32(r) , block=(16 , 32 , 1) , 
@@ -215,14 +215,14 @@ def cuda_simplex(A , B , C , basics , is_max):
     if m <= 0 :
         return
     n = len(A[0])
-    print "basics" , len(basics) , "\n" , basics
+    # print "basics" , len(basics) , "\n" , basics
     A = numpy.concatenate(([C], A), axis=0)
     matrix = numpy.zeros(shape=((round((numpy.shape(A))[0]/16) + 1)*16 ,
         (round((numpy.shape(A))[1]/32) + 1 )*32)).astype(numpy.float32)
-    print "m " , m 
-    print "n " , n
-    print "matrix " , len(matrix) , len(matrix[0])
-    print "B " , len(B)
+    # print "m " , m 
+    # print "n " , n
+    # print "matrix " , len(matrix) , len(matrix[0])
+    # print "B " , len(B)
     for i in range (m +1):
         for j in range (n + 1):
             if(j == 0 and i < len(B)):
@@ -270,6 +270,7 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
             final_result += res["values"][i] * C[i]
         return { "values" : res["values"] , "result" : final_result}
     else:#Compute cuda in 2 phase
+        print "compute cuda in 2 phase"
         Target = numpy.copy(C)
         C = numpy.zeros(shape=(len(C)-len(virtuals_constraints_num),1))
         basics = numpy.zeros(shape=(len(B)-1 , 1))
@@ -282,6 +283,9 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
         for i in range(len(virtuals_constraints_num)):
             for j in range(len(C)):
                C [j] +=  A[virtuals_constraints_num[i]-1][j]
+            # print "i : " , virtuals_constraints_num[i]
+            # print "B :" , B
+            # print "len(B) :" , len(B)
             B[0] += B[virtuals_constraints_num[i]]
             ## set the virtuals as basics
             basics [virtuals_constraints_num[i]-1] = virtuals_indices[i]
@@ -419,22 +423,22 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
 # slacks_constraint_num=numpy.array([1,2])
 # slacks_indices=numpy.array([3 , 4])
 
-A = numpy.array([
-     [1,1,-1,0,0,1]
-    ,[1,1,0,1,0,0]
-    ,[-(1/3) , 1 ,0,0,1,0]
-    ])
-C = numpy.array([0.05,0.04,0,0,0,0])
-B = numpy.array([0,10,12 , 0])
-# x      y      s1     s2     s3     s4
-x = numpy.array(['x','y','s1','s2','s3' , 'z1'])
-virtuals_indices=numpy.array([6])
-virtuals_constraints_num=numpy.array([1])
-slacks_constraint_num=numpy.array([1,2,3])
-slacks_indices=numpy.array([3 , 4 ,5])
+# A = numpy.array([
+#      [1,1,-1,0,0,1]
+#     ,[1,1,0,1,0,0]
+#     ,[-(1/3) , 1 ,0,0,1,0]
+#     ])
+# C = numpy.array([0.05,0.04,0,0,0,0])
+# B = numpy.array([0,10,12 , 0])
+# # x      y      s1     s2     s3     s4
+# x = numpy.array(['x','y','s1','s2','s3' , 'z1'])
+# virtuals_indices=numpy.array([6])
+# virtuals_constraints_num=numpy.array([1])
+# slacks_constraint_num=numpy.array([1,2,3])
+# slacks_indices=numpy.array([3 , 4 ,5])
 
 
-log("Starting")
-#find_feasible_point(A, B, C, virtuals_indices, slacks_indices)
-result = find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, slacks_constraint_num , slacks_indices , False)
-log( "result \n\n" + str(result))
+# log("Starting")
+# #find_feasible_point(A, B, C, virtuals_indices, slacks_indices)
+# result = find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices, slacks_constraint_num , slacks_indices , False)
+# log( "result \n\n" + str(result))
