@@ -289,6 +289,7 @@ class mpsParser ( Parser ):
             for key in b_vector:
             	b = b + [b_vector[key]]
             variable_names = []
+	    virtual_constraint = []
             c = []
             for key in c_vector:
             	c = c + [c_vector[key]]
@@ -320,16 +321,22 @@ class mpsParser ( Parser ):
             		if (slack_variables[key][:4] == "slkl"):
             			A[k][j] = 1
 				B[k] = b[i]
+				if B[k] < 0:
+					virtual_constraint = virtual_constraint + [k+1]
             		elif (slack_variables[key][:4] == "slkg"):
             			A[k][j] = -1
 				B[k] = b[i]
             			for p in range(len(list_variables) + len(slack_variables)):
             				A[k][p] = a[i][p]*(-1)
             				B[k] = b[i]*(-1)
+				if B[k] < 0:
+					virtual_constraint = virtual_constraint + [k+1]
 		else:
-			print ("equality")
+			#print ("equality")
 			slack_constraints = slack_constraints + [k+1]
 			B[k] = b[i]
+			if B[k] < 0:
+				virtual_constraint = virtual_constraint + [k+1]
 			for t in range(len(a[0])):
 				A[k][t] = a[i][t]
 			A[k][len(slack_variables) + k - i + len(list_variables)] = 1
@@ -337,6 +344,8 @@ class mpsParser ( Parser ):
 			#########
 			k += 1
 			B[k] = -b[i]
+			if B[k] < 0:
+				virtual_constraint = virtual_constraint + [k+1]
 			slack_constraints = slack_constraints + [k+1]
 			for t in range(len(a[0])):
 				A[k][t] = -a[i][t]
@@ -357,6 +366,7 @@ class mpsParser ( Parser ):
             #print("c")
             #print(c)
             np.savetxt("output/c" , c)
+            np.savetxt("output/virtual_constraint" , virtual_constraint)
             #print (slack_constraints)
             np.savetxt("output/slack_constraints" , slack_constraints, fmt='%s')
             #print (slack_indexes)
