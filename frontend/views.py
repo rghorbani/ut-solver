@@ -11,7 +11,7 @@ from frontend.tasks import *
 # %matplotlib inline
 import copy
 import numpy as np
-import matplotlib as mpl
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 # from matplotlib import get_current_fig_manager
@@ -21,7 +21,7 @@ from ut_solver.settings import STATIC_URL
 from lex.lexer import parse_problem
 
 
-mpl.use('Agg')
+matplotlib.use('Agg')
 
 
 def index(request):
@@ -155,6 +155,7 @@ def problem_view(request, problem_id):
                         dots[i].append(res)
                         dots[j].append(res)
                 # fig, ax = plt.subplots()
+                plt.show(warn=False)
                 fig = plt.figure()
                 ax = fig.add_subplot(111)
                 for dot in dots:
