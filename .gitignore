@@ -5,6 +5,11 @@ __pycache__/
 # C extensions
 *.so
 
+#compiled code
+*.pyc
+#input and output of parser
+parser/input/
+parser/output/
 # Distribution / packaging
 .Python
 env/
