@@ -17,6 +17,7 @@ import numpy
 C = numpy.loadtxt("../../lexer/output/c")
 B = numpy.loadtxt("../../lexer/output/b")
 A = numpy.loadtxt("../../lexer/output/a")
+# variables = numpy.loadtxt("../../lexer/output/varable_names")
 
 # virtuals_indices=numpy.loadtxt("output/virtual_constraint")
 virtuals_constraints_num=numpy.loadtxt("../../lexer/output/virtual_constraint" , ndmin=1)
@@ -61,5 +62,6 @@ for i in range(len(C)):
 #find_feasible_point(A, B, C, virtuals_indices, slacks_indices)
 result = simplex.find_feasible_point(A_added_virtuals ,B_revised,C_revised,
 	virtuals_constraints_num, virtuals_indices, 
-	slacks_constraint_num , slacks_indices , False)
+	slacks_constraint_num , slacks_indices , True)
+# simplex.log( "variables "  + str(variabl))
 simplex.log( "result \n\n" + str(result))
