@@ -269,7 +269,7 @@ def solve_cuda(request):
     result = solving_cuda(maximum)
     return render_to_response('problems/cuda_result.html', {
         'user': user,
-        'result': result,
+        'result': str(result),
         'view_name': 'Problem - CUDA - Result',
     })
 
