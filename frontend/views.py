@@ -231,7 +231,7 @@ def problem_cuda(request):
     else:
         form = UploadFileForm()
     form2 = SolveCudaForm()
-    file_exists = os.path.exists('cuda.txt')
+    file_exists = os.path.exists(BASE_DIR + '/cuda.txt')
     return render_to_response('problems/cuda.html', {
         'user': user,
         'form': form,
@@ -244,7 +244,7 @@ def problem_cuda(request):
 def parse_cuda(request):
     user = request.user
     parsing_cuda()
-    file_exists = os.path.exists('cuda.txt')
+    file_exists = os.path.exists(BASE_DIR + '/cuda.txt')
     return render_to_response('problems/cuda.html', {
         'user': user,
         'form': form,
@@ -261,7 +261,6 @@ def solve_cuda(request):
     if form.choice == 'max':
         maximum = True
     result = solving_cuda(maximum)
-    file_exists = os.path.exists('cuda.txt')
     return render_to_response('problems/cuda_result.html', {
         'user': user,
         'result': result,
