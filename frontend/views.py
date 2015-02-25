@@ -21,6 +21,7 @@ from mpld3 import fig_to_html, plugins
 from ut_solver.settings import STATIC_URL
 from lex.lexer import parse_problem
 from lexer.parser import parsing_cuda
+from simplex.cuda.cuda import solving_cuda
 import os.path
 
 
@@ -255,14 +256,14 @@ def parse_cuda(request):
 @login_required
 def solve_cuda(request):
     user = request.user
+    result = solving_cuda()
     form = UploadFileForm()
     file_exists = os.path.exists('cuda.txt')
-    return render_to_response('problems/cuda.html', {
+    return render_to_response('problems/cuda_result.html', {
         'user': user,
-        'form': form,
-        'file_exists': file_exists,
-        'view_name': 'Problem - CUDA',
-    }, context_instance=RequestContext(request))
+        'result': result,
+        'view_name': 'Problem - CUDA - Result',
+    })
 
 
 def handler403(request):
