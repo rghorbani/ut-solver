@@ -18,7 +18,7 @@ from matplotlib.path import Path
 # from matplotlib import get_current_fig_manager
 import matplotlib.patches as patches
 from mpld3 import fig_to_html, plugins
-from ut_solver.settings import STATIC_URL
+from ut_solver.settings import STATIC_URL, BASE_DIR
 from lex.lexer import parse_problem
 from lexer.parser import parsing_cuda
 from simplex.cuda.cuda import solving_cuda
@@ -215,7 +215,7 @@ def problem_delete(request, problem_id):
 
 
 def handle_uploaded_file(f):
-    with open('cuda.txt', 'wb+') as destination:
+    with open(BASE_DIR + 'cuda.txt', 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
