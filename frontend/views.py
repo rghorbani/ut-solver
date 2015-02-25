@@ -235,6 +235,7 @@ def problem_cuda(request):
     return render_to_response('problems/cuda.html', {
         'user': user,
         'form': form,
+        'form2': form2,
         'file_exists': file_exists,
         'view_name': 'Problem - CUDA',
     }, context_instance=RequestContext(request))
@@ -244,11 +245,13 @@ def problem_cuda(request):
 def parse_cuda(request):
     user = request.user
     parsing_cuda()
-    form = SolveCudaForm()
+    form = UploadFileForm()
+    form2 = SolveCudaForm()
     file_exists = os.path.exists(BASE_DIR + '/cuda.txt')
     return render_to_response('problems/cuda.html', {
         'user': user,
         'form': form,
+        'form2': form2,
         'file_exists': file_exists,
         'view_name': 'Problem - CUDA',
     }, context_instance=RequestContext(request))
