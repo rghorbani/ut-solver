@@ -273,105 +273,83 @@ class mpsParser ( Parser ):
             self.state = 52
             self.match(mpsParser.EOF)
 
-            slack_constraints = []
-            slack_indexes = []
-
             global b_vector
             global c_vector
             b = []
+            slack_indices = []
+            slack_constraint = []
             for key in a_vector:
-            	if key not in b_vector:
-            		b_vector[key] = 0
-            	row_a = a_vector[key]
-            	for column_a in row_a:
-            		if column_a not in c_vector:
-            			c_vector[column_a] = 0
+                if key not in b_vector:
+                        b_vector[key] = 0
+                row_a = a_vector[key]
+                for column_a in row_a:
+                        if column_a not in c_vector:
+                                c_vector[column_a] = 0
             for key in b_vector:
-            	b = b + [b_vector[key]]
+                b = b + [b_vector[key]]
             variable_names = []
-	    virtual_constraint = []
+            virtual_constraint = []
             c = []
             for key in c_vector:
-            	c = c + [c_vector[key]]
-            	variable_names = variable_names + [key]
+                c = c + [c_vector[key]]
+                variable_names = variable_names + [key]
             for i in range(len(slack_variables)):
-            	c = c + [0]
-            	variable_names = variable_names + ["s_"+str(i+1)]
-            	
+                c = c + [0]
+                variable_names = variable_names + ["s_"+str(i+1)]
             global slack_variables
             global variables
             list_variables = list(variables)
-	    B = [0 for x in range(len(b) + (len(b) - len(slack_variables)))]
-            a = [[0 for x in range(len(list_variables) + len(slack_variables) + 2* (len(b) - len(slack_variables))) ] for x in range(len(b) + (len(b) - len(slack_variables)))]
-	    A = [[0 for x in range(len(list_variables) + len(slack_variables) + 2* (len(b) - len(slack_variables))) ] for x in range(len(b) + (len(b) - len(slack_variables)))]
-	    k = 0
+            # a = [[0 for x in range(len(list_variables) + len(slack_variables))] for x in range(len(b))]
+            a = [[0 for x in range(len(list_variables) + 2*len(b) - len(slack_variables))]
+             for x in range(2*len(b) - len(slack_variables))]
+            length = len(b)
+            k_index = 0
             for key in b_vector:
-            	i = b_vector.keys().index(key)
-            	current_row = a_vector[key]
-            	for key_row in current_row:
-            		j = c_vector.keys().index(key_row)
-            		a[i][j] = current_row[key_row]
-            	#print (slack_variables)
-            	if key in slack_variables:
-            		slack_constraints = slack_constraints + [k+1]
-            		j = slack_variables.keys().index(key) + len(list_variables)
-            		slack_indexes = slack_indexes + [j+1]
-			for t in range(len(a[0])):
-				A[k][t] = A[i][t]
-            		if (slack_variables[key][:4] == "slkl"):
-            			A[k][j] = 1
-				B[k] = b[i]
-				if B[k] < 0:
-					virtual_constraint = virtual_constraint + [k+1]
-            		elif (slack_variables[key][:4] == "slkg"):
-            			A[k][j] = -1
-				B[k] = b[i]
-            			for p in range(len(list_variables) + len(slack_variables)):
-            				A[k][p] = a[i][p]*(-1)
-            				B[k] = b[i]*(-1)
-				if B[k] < 0:
-					virtual_constraint = virtual_constraint + [k+1]
-		else:
-			#print ("equality")
-			slack_constraints = slack_constraints + [k+1]
-			B[k] = b[i]
-			if B[k] < 0:
-				virtual_constraint = virtual_constraint + [k+1]
-			for t in range(len(a[0])):
-				A[k][t] = a[i][t]
-			A[k][len(slack_variables) + k - i + len(list_variables)] = 1
-			slack_indexes = slack_indexes + [len(slack_variables) + k - i + 1 + len(list_variables)]
-			#########
-			k += 1
-			B[k] = -b[i]
-			if B[k] < 0:
-				virtual_constraint = virtual_constraint + [k+1]
-			slack_constraints = slack_constraints + [k+1]
-			for t in range(len(a[0])):
-				A[k][t] = -a[i][t]
-			A[k][len(slack_variables) + k - i + len(list_variables)] = 1
-			slack_indexes = slack_indexes + [len(slack_variables) + k - i + 1 + len(list_variables)]
+                i = b_vector.keys().index(key)
+                current_row = a_vector[key]
+                for key_row in current_row:
+                        j = c_vector.keys().index(key_row)
+                        a[i][j] = current_row[key_row]
+                if key in slack_variables:
+                        j = slack_variables.keys().index(key) + len(list_variables)
+                        if (slack_variables[key][:4] == "slkl"):
+                                a[i][j] = 1
+                                slack_indices = slack_indices + [j + 1]
+                                slack_constraint = slack_constraint + [i + 1]
+                        if (slack_variables[key][:4] == "slkg"):
+                                a[i][j] = -1
+                                slack_indices = slack_indices + [j + 1]
+                                slack_constraint = slack_constraint + [i + 1]
+                                for k in range(len(list_variables) + len(slack_variables)):
+                                        a[i][k] = a[i][k]*(-1)
+                                        b[i] = b[i]*(-1)
+                else:
+                    a[i][k_index + len(list_variables) + len(slack_variables) ] = 1
+                    slack_indices = slack_indices + [k_index + len(list_variables) + len(slack_variables) + 1]
+                    slack_constraint = slack_constraint + [i + 1]
+                    variable_names = variable_names + ["s_"+str(len(slack_variables)+1 + k_index)]
+                    for t in range(len(a[i])):
+                        a[k_index + length ][t] = -a[i][t]
+                    a[k_index + length ][k_index + len(list_variables) + len(slack_variables) + 1] = 1
+                    b = b + [-b[i]]
 
-		k += 1
-			
-            #print(a_vector)
-            #print(b_vector)
-            #print(c_vector)
-            #print("a")
-            #print(a)
-            np.savetxt("output/a" , A)
-            #print("b")
-            #print(b)
-            np.savetxt("output/b" , B)
-            #print("c")
-            #print(c)
+                    slack_indices = slack_indices + [k_index + len(list_variables) + len(slack_variables) + 1 + 1]
+                    slack_constraint = slack_constraint + [k_index + length  + 1]
+                    variable_names = variable_names + ["s_"+str(len(slack_variables)+2 + k_index)]
+                    k_index +=2
+            virtual_constraint = []
+            for t in range(len(b)):
+                if b[t] < 0:
+                    virtual_constraint = virtual_constraint + [t+1]
+            while len(c) < len(a[0]):
+                c = c + [0.0]
+
+            np.savetxt("output/a" , a)
+            np.savetxt("output/b" , b)
             np.savetxt("output/c" , c)
             np.savetxt("output/virtual_constraint" , virtual_constraint)
-            #print (slack_constraints)
-            np.savetxt("output/slack_constraints" , slack_constraints, fmt='%s')
-            #print (slack_indexes)
-            np.savetxt("output/slack_indexes" , slack_indexes, fmt='%s')
-            #print (variable_names)
+            np.savetxt("output/slack_constraints" , slack_constraint, fmt='%s')
+            np.savetxt("output/slack_indexes" , slack_indices, fmt='%s')
             np.savetxt("output/variable_names" , variable_names, fmt='%s')
 
         except RecognitionException as re:
@@ -763,20 +741,20 @@ class mpsParser ( Parser ):
             row_types[(None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)] = (None if localctx._ROWTYPE is None else localctx._ROWTYPE.text)
             global cost_seen
             if ((None if localctx._ROWTYPE is None else localctx._ROWTYPE.text) == 'N' and cost_seen==0):
-            	global cost_identifier
-            	cost_identifier = (None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)
-            	cost_seen=1
-            	
+                global cost_identifier
+                cost_identifier = (None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)
+                cost_seen=1
+                
             if ((None if localctx._ROWTYPE is None else localctx._ROWTYPE.text) == 'G'):
-            	global slack_counter
-            	slack_counter = slack_counter + 1
-            	slack_name = slack_prefix_g + str(slack_counter)
-            	slack_variables[(None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)] = slack_name
+                global slack_counter
+                slack_counter = slack_counter + 1
+                slack_name = slack_prefix_g + str(slack_counter)
+                slack_variables[(None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)] = slack_name
             if ((None if localctx._ROWTYPE is None else localctx._ROWTYPE.text) == 'L'):
-            	global slack_counter
-            	slack_counter = slack_counter + 1
-            	slack_name = slack_prefix_l + str(slack_counter)
-            	slack_variables[(None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)] = slack_name
+                global slack_counter
+                slack_counter = slack_counter + 1
+                slack_name = slack_prefix_l + str(slack_counter)
+                slack_variables[(None if localctx._BEZEICHNER is None else localctx._BEZEICHNER.text)] = slack_name
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1081,28 +1059,28 @@ class mpsParser ( Parser ):
 
             global c_vector
             if((None if localctx.b2 is None else localctx.b2.text) == cost_identifier):
-            	c_vector[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
+                c_vector[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
             else:
-            	global a_vector
-            	a_vector_row = {}
-            	if (None if localctx.b2 is None else localctx.b2.text) in a_vector:
-            		a_vector_row = a_vector[(None if localctx.b2 is None else localctx.b2.text)]			
-            		del a_vector[(None if localctx.b2 is None else localctx.b2.text)]
-            	a_vector_row[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
-            	a_vector[(None if localctx.b2 is None else localctx.b2.text)] = a_vector_row
+                global a_vector
+                a_vector_row = {}
+                if (None if localctx.b2 is None else localctx.b2.text) in a_vector:
+                    a_vector_row = a_vector[(None if localctx.b2 is None else localctx.b2.text)]            
+                    del a_vector[(None if localctx.b2 is None else localctx.b2.text)]
+                a_vector_row[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
+                a_vector[(None if localctx.b2 is None else localctx.b2.text)] = a_vector_row
             global list_variables
             variables.add((None if localctx.b1 is None else localctx.b1.text))
             if (localctx.b3 and localctx.n2):
-            	if((None if localctx.b3 is None else localctx.b3.text) == cost_identifier):
-            		c_vector[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
-            	else:
-            		global a_vector
-            		a_vector_row = {}
-            		if (None if localctx.b3 is None else localctx.b3.text) in a_vector:
-            			a_vector_row = a_vector[(None if localctx.b3 is None else localctx.b3.text)]			
-            			del a_vector[(None if localctx.b3 is None else localctx.b3.text)]
-            		a_vector_row[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n2 is None else localctx.n2.text))
-            		a_vector[(None if localctx.b3 is None else localctx.b3.text)] = a_vector_row
+                if((None if localctx.b3 is None else localctx.b3.text) == cost_identifier):
+                    c_vector[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
+                else:
+                    global a_vector
+                    a_vector_row = {}
+                    if (None if localctx.b3 is None else localctx.b3.text) in a_vector:
+                        a_vector_row = a_vector[(None if localctx.b3 is None else localctx.b3.text)]            
+                        del a_vector[(None if localctx.b3 is None else localctx.b3.text)]
+                    a_vector_row[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n2 is None else localctx.n2.text))
+                    a_vector[(None if localctx.b3 is None else localctx.b3.text)] = a_vector_row
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1181,8 +1159,8 @@ class mpsParser ( Parser ):
             global b_vector
             b_vector[(None if localctx.b1 is None else localctx.b1.text)] = float((None if localctx.n1 is None else localctx.n1.text))
             if(localctx.b2 and localctx.n2):
-            	global b_vector
-            	b_vector[(None if localctx.b2 is None else localctx.b2.text)] = float((None if localctx.n2 is None else localctx.n2.text))
+                global b_vector
+                b_vector[(None if localctx.b2 is None else localctx.b2.text)] = float((None if localctx.n2 is None else localctx.n2.text))
 
 
         except RecognitionException as re:
@@ -1267,73 +1245,73 @@ class mpsParser ( Parser ):
             a_vector[new_name] = new_a_row
             global row_types
             if( row_types[(None if localctx.b2 is None else localctx.b2.text)] == 'G'):
-            	global slack_counter
-            	slack_counter = slack_counter + 1
-            	slack_name = slack_prefix_l + str(slack_counter)
-            	slack_variables[new_name] = slack_name
-            	global b_vector
-            	b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] + abs(float((None if localctx.n1 is None else localctx.n1.text)))
+                global slack_counter
+                slack_counter = slack_counter + 1
+                slack_name = slack_prefix_l + str(slack_counter)
+                slack_variables[new_name] = slack_name
+                global b_vector
+                b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] + abs(float((None if localctx.n1 is None else localctx.n1.text)))
 
             if (row_types[(None if localctx.b2 is None else localctx.b2.text)] == 'L'):
-            	global slack_counter
-            	slack_counter = slack_counter + 1
-            	slack_name = slack_prefix_g + str(slack_counter)
-            	slack_variables[new_name] = slack_name
-            	global b_vector
-            	b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] - abs(float((None if localctx.n1 is None else localctx.n1.text)))
+                global slack_counter
+                slack_counter = slack_counter + 1
+                slack_name = slack_prefix_g + str(slack_counter)
+                slack_variables[new_name] = slack_name
+                global b_vector
+                b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] - abs(float((None if localctx.n1 is None else localctx.n1.text)))
 
             if (row_types[(None if localctx.b2 is None else localctx.b2.text)] == 'E' and float((None if localctx.n1 is None else localctx.n1.text))>0):
-            	global slack_counter
-            	slack_counter = slack_counter + 1
-            	slack_name = slack_prefix_l + str(slack_counter)
-            	slack_variables[new_name] = slack_name
-            	global b_vector
-            	b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] + abs(float((None if localctx.n1 is None else localctx.n1.text)))
+                global slack_counter
+                slack_counter = slack_counter + 1
+                slack_name = slack_prefix_l + str(slack_counter)
+                slack_variables[new_name] = slack_name
+                global b_vector
+                b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] + abs(float((None if localctx.n1 is None else localctx.n1.text)))
 
             if (row_types[(None if localctx.b2 is None else localctx.b2.text)] == 'E' and float((None if localctx.n1 is None else localctx.n1.text))<0):
-            	global slack_counter
-            	slack_counter = slack_counter + 1
-            	slack_name = slack_prefix_g + str(slack_counter)
-            	slack_variables[new_name] = slack_name
-            	global b_vector
-            	b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] - abs(float((None if localctx.n1 is None else localctx.n1.text)))
+                global slack_counter
+                slack_counter = slack_counter + 1
+                slack_name = slack_prefix_g + str(slack_counter)
+                slack_variables[new_name] = slack_name
+                global b_vector
+                b_vector[new_name] =  b_vector[(None if localctx.b2 is None else localctx.b2.text)] - abs(float((None if localctx.n1 is None else localctx.n1.text)))
             if(localctx.b3 and localctx.n2):
-            	global a_vector
-            	new_a_row = a_vector[(None if localctx.b3 is None else localctx.b3.text)]
-            	new_name = (None if localctx.b3 is None else localctx.b3.text) + "_1"
-            	a_vector[new_name] = new_a_row
-            	global row_types
-            	if( row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'G'):
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_l + str(slack_counter)
-            		slack_variables[new_name] = slack_name
-            		global b_vector
-            		b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] + abs(float((None if localctx.n2 is None else localctx.n2.text)))
+                global a_vector
+                new_a_row = a_vector[(None if localctx.b3 is None else localctx.b3.text)]
+                new_name = (None if localctx.b3 is None else localctx.b3.text) + "_1"
+                a_vector[new_name] = new_a_row
+                global row_types
+                if( row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'G'):
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_l + str(slack_counter)
+                    slack_variables[new_name] = slack_name
+                    global b_vector
+                    b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] + abs(float((None if localctx.n2 is None else localctx.n2.text)))
 
-            	if (row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'L'):
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_g + str(slack_counter)
-            		slack_variables[new_name] = slack_name
-            		global b_vector
-            		b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] - abs(float((None if localctx.n2 is None else localctx.n2.text)))
+                if (row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'L'):
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_g + str(slack_counter)
+                    slack_variables[new_name] = slack_name
+                    global b_vector
+                    b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] - abs(float((None if localctx.n2 is None else localctx.n2.text)))
 
-            	if (row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'E' and float((None if localctx.n2 is None else localctx.n2.text))>0):
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_l + str(slack_counter)
-            		slack_variables[new_name] = slack_name
-            		global b_vector
-            		b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] + abs(float((None if localctx.n2 is None else localctx.n2.text)))
+                if (row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'E' and float((None if localctx.n2 is None else localctx.n2.text))>0):
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_l + str(slack_counter)
+                    slack_variables[new_name] = slack_name
+                    global b_vector
+                    b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] + abs(float((None if localctx.n2 is None else localctx.n2.text)))
 
-            	if (row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'E' and float((None if localctx.n2 is None else localctx.n2.text))<0):
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_g + str(slack_counter)
-            		slack_variables[new_name] = slack_name
-            		global b_vector
-            		b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] - abs(float((None if localctx.n2 is None else localctx.n2.text)))
+                if (row_types[(None if localctx.b3 is None else localctx.b3.text)] == 'E' and float((None if localctx.n2 is None else localctx.n2.text))<0):
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_g + str(slack_counter)
+                    slack_variables[new_name] = slack_name
+                    global b_vector
+                    b_vector[new_name] =  b_vector[(None if localctx.b3 is None else localctx.b3.text)] - abs(float((None if localctx.n2 is None else localctx.n2.text)))
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1407,51 +1385,51 @@ class mpsParser ( Parser ):
 
 
             if ( (None if localctx.b1 is None else localctx.b1.text) == "MI"  or (None if localctx.b1 is None else localctx.b1.text) == "PL"):
-            	global bound_count
-            	bound_count = bound_count + 1
-            	global a_vector
-            	a_vector_row = {}
-            	a_vector_row[(None if localctx.b2 is None else localctx.b2.text)] = 1
-            	bound_name = bound_prefix + str(bound_count)
-            	a_vector[bound_name] = a_vector_row
-            		
-            	global b_vector
-            	
-            	if ( (None if localctx.b1 is None else localctx.b1.text) == "MI"):
-            		b_vector[bound_name] = 0
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_l + str(slack_counter)
-            		slack_variables[bound_name] = slack_name
-            	if ( (None if localctx.b1 is None else localctx.b1.text) == "PL"):
-            		b_vector[bound_name] = 0
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_g + str(slack_counter)
-            		slack_variables[bound_name] = slack_name
+                global bound_count
+                bound_count = bound_count + 1
+                global a_vector
+                a_vector_row = {}
+                a_vector_row[(None if localctx.b2 is None else localctx.b2.text)] = 1
+                bound_name = bound_prefix + str(bound_count)
+                a_vector[bound_name] = a_vector_row
+                    
+                global b_vector
+                
+                if ( (None if localctx.b1 is None else localctx.b1.text) == "MI"):
+                    b_vector[bound_name] = 0
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_l + str(slack_counter)
+                    slack_variables[bound_name] = slack_name
+                if ( (None if localctx.b1 is None else localctx.b1.text) == "PL"):
+                    b_vector[bound_name] = 0
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_g + str(slack_counter)
+                    slack_variables[bound_name] = slack_name
             else:
-            	global bound_count
-            	bound_count = bound_count + 1
-            	global a_vector
-            	a_vector_row = {}
-            	a_vector_row[(None if localctx.b2 is None else localctx.b2.text)] = 1
-            	bound_name = bound_prefix + str(bound_count)
-            	a_vector[bound_name] = a_vector_row
-            	
-            	global b_vector
-            	b_vector[bound_name] = float((None if localctx._NUMERICALVALUE is None else localctx._NUMERICALVALUE.text))
+                global bound_count
+                bound_count = bound_count + 1
+                global a_vector
+                a_vector_row = {}
+                a_vector_row[(None if localctx.b2 is None else localctx.b2.text)] = 1
+                bound_name = bound_prefix + str(bound_count)
+                a_vector[bound_name] = a_vector_row
+                
+                global b_vector
+                b_vector[bound_name] = float((None if localctx._NUMERICALVALUE is None else localctx._NUMERICALVALUE.text))
 
-            	if (None if localctx.b1 is None else localctx.b1.text) == "UP":
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_l + str(slack_counter)
-            		slack_variables[bound_name] = slack_name
-            		
-            	if (None if localctx.b1 is None else localctx.b1.text) == "LO":
-            		global slack_counter
-            		slack_counter = slack_counter + 1
-            		slack_name = slack_prefix_g + str(slack_counter)
-            		slack_variables[bound_name] = slack_name
+                if (None if localctx.b1 is None else localctx.b1.text) == "UP":
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_l + str(slack_counter)
+                    slack_variables[bound_name] = slack_name
+                    
+                if (None if localctx.b1 is None else localctx.b1.text) == "LO":
+                    global slack_counter
+                    slack_counter = slack_counter + 1
+                    slack_name = slack_prefix_g + str(slack_counter)
+                    slack_variables[bound_name] = slack_name
 
         except RecognitionException as re:
             localctx.exception = re
