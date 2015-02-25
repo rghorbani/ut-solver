@@ -128,6 +128,8 @@ DEFAULT_TO_EMAIL = 'r.ghorbani.f@gmail.com'
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
+MEDIA_ROOT = BASE_DIR + '/media/'
+
 LOGIN_URL = '/users/sign_in/'
 
 LOGIN_REDIRECT_URL = '/'
