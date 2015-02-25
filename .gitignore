@@ -68,3 +68,4 @@ frontend/static/admin
 ut_solver/secret.yaml
 parser.out
 parsetab.py
+cuda.txt

@@ -12,6 +12,7 @@ from frontend.tasks import *
 import copy
 import numpy as np
 import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 # from matplotlib import get_current_fig_manager
@@ -19,9 +20,9 @@ import matplotlib.patches as patches
 from mpld3 import fig_to_html, plugins
 from ut_solver.settings import STATIC_URL
 from lex.lexer import parse_problem
+from lexer.parser import parsing_cuda
+import os.path
 
-
-matplotlib.use('Agg')
 
 
 def index(request):
@@ -210,6 +211,58 @@ def problem_delete(request, problem_id):
         redirect('/problems')
     else:
         raise PermissionDenied()
+
+
+def handle_uploaded_file(f):
+    with open('cuda.txt', 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+
+@login_required
+def problem_cuda(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            redirect('/problem/cuda')
+    else:
+        form = UploadFileForm()
+    file_exists = os.path.exists('cuda.txt')
+    return render_to_response('problems/cuda.html', {
+        'user': user,
+        'form': form,
+        'file_exists': file_exists,
+        'view_name': 'Problem - CUDA',
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def parse_cuda(request):
+    user = request.user
+    parsing_cuda()
+    form = UploadFileForm()
+    file_exists = os.path.exists('cuda.txt')
+    return render_to_response('problems/cuda.html', {
+        'user': user,
+        'form': form,
+        'file_exists': file_exists,
+        'view_name': 'Problem - CUDA',
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def solve_cuda(request):
+    user = request.user
+    form = UploadFileForm()
+    file_exists = os.path.exists('cuda.txt')
+    return render_to_response('problems/cuda.html', {
+        'user': user,
+        'form': form,
+        'file_exists': file_exists,
+        'view_name': 'Problem - CUDA',
+    }, context_instance=RequestContext(request))
 
 
 def handler403(request):

@@ -8,6 +8,15 @@ from mpsListener import *
 
 import sys
 
+
+def parsing_cuda():
+    input = FileStream('cuda.txt')
+    lexer = mpsLexer(input)
+    stream = CommonTokenStream(lexer)
+    parser = mpsParser(stream)
+    tree = parser.modell()
+
+
 def main(argv):
 
     input = FileStream(argv[1])

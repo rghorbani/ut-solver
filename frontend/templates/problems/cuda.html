@@ -1,0 +1,33 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %}New Problem{% endblock %}
+
+{% block content %}
+	{% if file_exists %}
+	<p>File Exists</p>
+	<a href="parse_cuda" class="btn blue col-md-3">Parse</a>
+	<a href="solve_cuda" class="btn blue col-md-3">Solve</a>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	{% endif %}
+	<form action="cuda" method="POST" role="form" enctype="multipart/form-data">
+	{% csrf_token %}
+		{% if form.non_field_errors %}
+		<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<strong>Error!</strong> {{ form.non_field_errors }}
+		</div>
+		{% endif %}
+		<div class="form-group">
+			<label for="{{ form.file.id_for_label }}" class=" control-label">{{ form.file.label_tag }}</label>
+			{{ form.file }}
+			{{ form.file.errors }}
+		</div>
+		<div class="form-group">
+			<button type="submit" class="btn blue col-md-3">Upload</button>
+		</div>
+	</form>
+{% endblock %}

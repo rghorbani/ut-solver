@@ -63,3 +63,7 @@ class NewProblemForm(forms.ModelForm):
     class Meta:
         model = Problem
         fields = ('problem_text',)
+
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
