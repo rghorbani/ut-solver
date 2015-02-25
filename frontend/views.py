@@ -263,7 +263,8 @@ def solve_cuda(request):
     form = SolveCudaForm(request.POST)
     if form.is_valid():
         maximum = False
-        if form.fileds['choice'] == 'max':
+        print form.cleaned_data['choice']
+        if form.cleaned_data['choice'] == 'max':
             maximum = True
     result = solving_cuda(maximum)
     return render_to_response('problems/cuda_result.html', {
