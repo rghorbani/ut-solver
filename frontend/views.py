@@ -215,7 +215,7 @@ def problem_delete(request, problem_id):
 
 
 def handle_uploaded_file(f):
-    with open(BASE_DIR + 'cuda.txt', 'wb+') as destination:
+    with open(BASE_DIR + '/cuda.txt', 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
