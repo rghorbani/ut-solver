@@ -66,4 +66,17 @@ class NewProblemForm(forms.ModelForm):
 
 
 class UploadFileForm(forms.Form):
-    file = forms.FileField()
+    file = forms.FileField(label='CUDA file')
+
+
+class SolveCudaForm(forms.Form):
+    CHOICES = (
+        ('max', 'Max'),
+        ('min', 'Min'),
+    )
+
+    choice = forms.ChoiceField(choices = CHOICES, label='Choice', error_messages={'required': 'You should choose one type.'})
+
+    def __init__(self, *args, **kwargs):
+        super(SolveCudaForm, self).__init__(*args, **kwargs)
+        self.initial['choice'] = 'max'
