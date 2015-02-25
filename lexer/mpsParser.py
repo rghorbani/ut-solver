@@ -4,6 +4,7 @@ from __future__ import print_function
 import numpy as np
 from antlr4 import *
 from io import StringIO
+from ut_solver.settings import BASE_DIR
 package = globals().get("__package__", None)
 ischild = len(package)>0 if package is not None else False
 if ischild:
@@ -344,13 +345,13 @@ class mpsParser ( Parser ):
             while len(c) < len(a[0]):
                 c = c + [0.0]
 
-            np.savetxt("output/a" , a)
-            np.savetxt("output/b" , b)
-            np.savetxt("output/c" , c)
-            np.savetxt("output/virtual_constraint" , virtual_constraint)
-            np.savetxt("output/slack_constraints" , slack_constraint, fmt='%s')
-            np.savetxt("output/slack_indexes" , slack_indices, fmt='%s')
-            np.savetxt("output/variable_names" , variable_names, fmt='%s')
+            np.savetxt(BASE_DIR + "/output/a" , a)
+            np.savetxt(BASE_DIR + "/output/b" , b)
+            np.savetxt(BASE_DIR + "/output/c" , c)
+            np.savetxt(BASE_DIR + "/output/virtual_constraint" , virtual_constraint)
+            np.savetxt(BASE_DIR + "/output/slack_constraints" , slack_constraint, fmt='%s')
+            np.savetxt(BASE_DIR + "/output/slack_indexes" , slack_indices, fmt='%s')
+            np.savetxt(BASE_DIR + "/output/variable_names" , variable_names, fmt='%s')
 
         except RecognitionException as re:
             localctx.exception = re
