@@ -8,8 +8,8 @@ __pycache__/
 #compiled code
 *.pyc
 #input and output of parser
-parser/input/
-parser/output/
+lexer/input/
+lexer/output/
 # Distribution / packaging
 .Python
 env/

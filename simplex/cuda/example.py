@@ -14,14 +14,12 @@ import numpy
 # virtuals_constraints_num=numpy.array([])
 # slacks_constraint_num=numpy.array([1,2,3])
 # slacks_indices=numpy.array([3 , 4 ,5])
-C = numpy.loadtxt("../../parser/output/c")
-B = numpy.loadtxt("../../parser/output/b")
-A = numpy.loadtxt("../../parser/output/a")
+C = numpy.loadtxt("../../lexer/output/c")
+B = numpy.loadtxt("../../lexer/output/b")
+A = numpy.loadtxt("../../lexer/output/a")
 
 # virtuals_indices=numpy.loadtxt("output/virtual_constraint")
-virtuals_constraints_num=numpy.loadtxt("../../parser/output/virtual_constraint")
-print "virtual_constraint" , virtuals_constraints_num
-virtuals_constraints_num = [31]
+virtuals_constraints_num=numpy.loadtxt("../../lexer/output/virtual_constraint" , ndmin=1)
 A_added_virtuals= numpy.zeros(shape=(len(A),(len(A[0]) + len(virtuals_constraints_num))))
 for i in range(len(A_added_virtuals)):
 	for j in range(len(A[0])):
@@ -29,14 +27,21 @@ for i in range(len(A_added_virtuals)):
 
 virtuals_indices = []
 k = 0 
-for i in virtuals_constraints_num:
-	A_added_virtuals[i-1][k + len(A[0])] = -1
+for i in range(len(virtuals_constraints_num)):
+	# print " a :" , virtuals_constraints_num [i-1]
+	# print " b :" , k + len(A[0])
+	# print "len :" , len(A_added_virtuals)
+	# print "len :" , len(A_added_virtuals[0])
+	A_added_virtuals[virtuals_constraints_num [i-1] -1  ][k + len(A[0])] = -1
 	k += 1
 	virtuals_indices = virtuals_indices + [k + len(A[0])]
 
-slacks_constraint_num=numpy.loadtxt("../../parser/output/slack_constraints")
-slacks_indices=numpy.loadtxt("../../parser/output/slack_indexes")
-
+slacks_constraint_num=numpy.loadtxt("../../lexer/output/slack_constraints")
+slacks_indices=numpy.loadtxt("../../lexer/output/slack_indexes")
+# print "slack_indexes" , slacks_indices
+# print "slacks_constraint_num" , slacks_constraint_num 
+# print "virtuals_indices" , virtuals_indices
+# print "virtuals_constraints_num" , virtuals_constraints_num
 B_revised = numpy.zeros(shape=(len(B) +1))
 C_revised = numpy.zeros(shape=(len(A_added_virtuals[0])))
 for i in range (1 ,len(B_revised)):
@@ -54,10 +59,7 @@ for i in range(len(C)):
 # print virtuals_indices
 
 #find_feasible_point(A, B, C, virtuals_indices, slacks_indices)
-print "A_added_virtuals" , A_added_virtuals
 result = simplex.find_feasible_point(A_added_virtuals ,B_revised,C_revised,
 	virtuals_constraints_num, virtuals_indices, 
-	slacks_constraint_num , slacks_indices , True)
+	slacks_constraint_num , slacks_indices , False)
 simplex.log( "result \n\n" + str(result))
-# for i in result["values"]:
-# 	print i

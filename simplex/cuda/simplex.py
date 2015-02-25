@@ -91,6 +91,7 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         counter+=1
         # print "boogh \n" ,  matrix_gpu.get()
         # log(" i =  " + str(counter) + "matrix :\n" )
+        # print "boooogh"
         # print_matrix(matrix_gpu.get())
         row = matrix_gpu.get()[0]
         #print "row= ", row
@@ -151,11 +152,12 @@ def compute_cuda_simplex(matrix ,  basics_index , is_max):
         flag = False
         minimum = -1
         # print "i :" , i
-        # print "k :" , k
+        print "k :" , k
         #print "teta_gpu:\n", teta_gpu.get()
         i = 0 
+        # print "teta_gpu" , teta_gpu.get()
         for i in range (1 , h * 16):
-            if minimum == -1 and teta_gpu.get()[i] > 0:
+            if minimum == -1 and teta_gpu.get()[i] > 0 and teta_gpu.get()[i] != float('inf'):
                 minimum = teta_gpu.get()[i]
                 flag = True
                 r = i
@@ -229,6 +231,7 @@ def cuda_simplex(A , B , C , basics , is_max):
                 matrix[i][j] = B[i]
             else:
                 matrix[i][j] = float(A[i][j-1]) 
+    # print_matrix(matrix)
     return_collection = compute_cuda_simplex(matrix , basics , is_max)
     #print "solution: " ,return_collection["solution"]
     # print "basics :" , return_collection["basics_index"]
@@ -270,23 +273,36 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
             final_result += res["values"][i] * C[i]
         return { "values" : res["values"] , "result" : final_result}
     else:#Compute cuda in 2 phase
-        print "compute cuda in 2 phase"
+        # print "compute cuda in 2 phase"
+        # print_matrix(A)
+        # print "B :" , B
+        # print "C :" , C
         Target = numpy.copy(C)
         C = numpy.zeros(shape=(len(C)-len(virtuals_constraints_num),1))
         basics = numpy.zeros(shape=(len(B)-1 , 1))
         #create target to minimize the sum of virtual variables
         for i in range(len(virtuals_indices)):
             C = numpy.append(C , [-1.0])
-        #print "C is :" , C
+        # print "C is :" , C
 
         # kanooni kardan bar hasb virtual ha 
+        gtz = True
         for i in range(len(virtuals_constraints_num)):
-            for j in range(len(C)):
-               C [j] +=  A[virtuals_constraints_num[i]-1][j]
+            # print "boooogh" , virtuals_constraints_num
+            if A[virtuals_constraints_num[i]-1][virtuals_indices[i]-1] > 0 :
+                for j in range(len(C)):
+                    C [j] +=  A[virtuals_constraints_num[i]-1][j]
+            else:
+                gtz = False
+                for j in range(len(C)):
+                    C [j] -=  A[virtuals_constraints_num[i]-1][j]
             # print "i : " , virtuals_constraints_num[i]
             # print "B :" , B
             # print "len(B) :" , len(B)
-            B[0] += B[virtuals_constraints_num[i]]
+            if gtz:
+                B[0] += B[virtuals_constraints_num[i]]
+            else :
+                B[0] -= B[virtuals_constraints_num[i]]
             ## set the virtuals as basics
             basics [virtuals_constraints_num[i]-1] = virtuals_indices[i]
         
@@ -295,6 +311,9 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
             if(basics[slacks_constraint_num[i]-1] == 0 ):
                 basics[slacks_constraint_num[i]-1] = slacks_indices[i]
 
+        # print "A " , A
+        # print "B " , B
+        # print "C " , C
         ret = cuda_simplex(A , B , C , basics , False)
         A = ret["A"]
         B = ret ["B"]
@@ -318,6 +337,8 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
 
             for i in range (len(basics)):
                 if(C[int(basics[i])-1] != 0):
+                    # print "1 :" , C[int(basics[i])-1]
+                    # print "2 :" , A[i][int(basics[i])-1]
                     piv = C[int(basics[i])-1] / A[i][int(basics[i])-1]
                 else:
                     piv = 0.0 
@@ -337,8 +358,9 @@ def find_feasible_point(A,B,C,virtuals_constraints_num, virtuals_indices,
                 for p in range( len(temp) ):
                     C[p] = float(C[p]) -  float(temp[p])
                 # log("after :C :\n" + str(C))
-                
-                target_sum -=B[i] * piv
+                # print "B[i]" , B[i]
+                # print "piv" , piv
+                target_sum -= B[i] * piv
                 for j in range ( len(basics) ):
                    if ( j!=i ):
                        if( A[i][int(basics[i])-1] != 0 ):
