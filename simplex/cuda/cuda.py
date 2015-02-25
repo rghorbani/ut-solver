@@ -14,7 +14,7 @@ import numpy
 # virtuals_constraints_num=numpy.array([])
 # slacks_constraint_num=numpy.array([1,2,3])
 # slacks_indices=numpy.array([3 , 4 ,5])
-def solving_cuda():
+def solving_cuda(maximum):
 	C = numpy.loadtxt("output/c")
 	B = numpy.loadtxt("output/b")
 	A = numpy.loadtxt("output/a")
@@ -63,7 +63,7 @@ def solving_cuda():
 	#find_feasible_point(A, B, C, virtuals_indices, slacks_indices)
 	result = simplex.find_feasible_point(A_added_virtuals ,B_revised,C_revised,
 		virtuals_constraints_num, virtuals_indices, 
-		slacks_constraint_num , slacks_indices , True)
+		slacks_constraint_num , slacks_indices , maximum)
 	# simplex.log( "variables "  + str(variabl))
 	simplex.log( "result \n\n" + str(result))
 	return result

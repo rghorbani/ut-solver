@@ -30,16 +30,20 @@
 	<br>
 	<form action="solve_cuda" method="POST" role="form" enctype="multipart/form-data">
 	{% csrf_token %}
-		{% if form.non_field_errors %}
+		{% if form2.non_field_errors %}
 		<div class="alert alert-danger alert-dismissible" role="alert">
 		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		<strong>Error!</strong> {{ form.non_field_errors }}
+		<strong>Error!</strong> {{ form2.non_field_errors }}
 		</div>
 		{% endif %}
 		<div class="form-group">
-			<label for="{{ form.choice.id_for_label }}" class=" control-label">{{ form.choice.label_tag }}</label>
-			{{ form.choice }}
-			{{ form.choice.errors }}
+			<label for="{{ form2.choice.id_for_label }}" class=" control-label">{{ form2.choice.label_tag }}</label>
+			<!-- <select>
+				<option value="max">Max</option>
+				<option value="min">Min</option>
+			</select> -->
+			{{ form2.choice }}
+			{{ form2.choice.errors }}
 		</div>
 		<div class="form-group">
 			<button type="submit" class="btn blue col-md-3">Solve</button>
