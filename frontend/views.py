@@ -244,6 +244,7 @@ def problem_cuda(request):
 def parse_cuda(request):
     user = request.user
     parsing_cuda()
+    form = SolveCudaForm()
     file_exists = os.path.exists(BASE_DIR + '/cuda.txt')
     return render_to_response('problems/cuda.html', {
         'user': user,
