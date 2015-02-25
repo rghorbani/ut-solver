@@ -261,9 +261,10 @@ def parse_cuda(request):
 def solve_cuda(request):
     user = request.user
     form = SolveCudaForm(request.POST)
-    maximum = False
-    if form.choice == 'max':
-        maximum = True
+    if form.is_valid():
+        maximum = False
+        if form.fileds['choice'] == 'max':
+            maximum = True
     result = solving_cuda(maximum)
     return render_to_response('problems/cuda_result.html', {
         'user': user,
