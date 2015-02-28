@@ -23,7 +23,7 @@
 	{% if file_exists %}
 	<br>
 	<br>
-	<p>Parser File Exists</p>
+	<p>CUDA File Exists</p>
 	<br>
 	<a href="parse_cuda" class="btn blue col-md-3">Parse</a>
 	<br>
@@ -39,10 +39,6 @@
 		{% endif %}
 		<div class="form-group">
 			<label for="{{ form2.choice.id_for_label }}" class=" control-label">{{ form2.choice.label_tag }}</label>
-			<!-- <select>
-				<option value="max">Max</option>
-				<option value="min">Min</option>
-			</select> -->
 			{{ form2.choice }}
 			{{ form2.choice.errors }}
 		</div>
@@ -50,6 +46,9 @@
 			<button type="submit" class="btn blue col-md-3">Solve</button>
 		</div>
 	</form>
+	<script type="text/javascript">
+		$("select[name=choice]").select2();
+	</script>
 	<!-- <a href="solve_cuda" class="btn blue col-md-3">Solve</a> -->
 	{% endif %}
 {% endblock %}
