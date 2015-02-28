@@ -263,15 +263,25 @@ def solve_cuda(request):
     form = SolveCudaForm(request.POST)
     if form.is_valid():
         maximum = False
-        print form.cleaned_data['choice']
         if form.cleaned_data['choice'] == 'max':
             maximum = True
-    result = solving_cuda(maximum)
-    return render_to_response('problems/cuda_result.html', {
-        'user': user,
-        'result': str(result),
-        'view_name': 'Problem - CUDA - Result',
-    })
+        result = solving_cuda(maximum)
+        return render_to_response('problems/cuda_result.html', {
+            'user': user,
+            'result': str(result),
+            'view_name': 'Problem - CUDA - Result',
+        })
+    else:
+        form = UploadFileForm()
+        form2 = SolveCudaForm()
+        file_exists = os.path.exists(BASE_DIR + '/cuda.txt')
+        return render_to_response('problems/cuda.html', {
+            'user': user,
+            'form': form,
+            'form2': form2,
+            'file_exists': file_exists,
+            'view_name': 'Problem - CUDA',
+        })
 
 
 def handler403(request):
