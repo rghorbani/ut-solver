@@ -68,7 +68,7 @@ def solving_cuda(maximum):
     # simplex.log( "variables "  + str(variabl))
     paired_result = {}
     _index = 0;
-    with open('/outpu/variable_names','r') as f:
+    with open(BASE_DIR +'/output/variable_names','r') as f:
         for line in f:
             for word in line.split():
                 paired_result[word] = result["values"][_index]
