@@ -4,38 +4,43 @@
 
 {% block content %}
 	<div class="row">
+		<style type="text/css">
+			table#result {
+				font-size: 17px;
+			}
+		</style>
 		<div class="col-md-12"><h2>Result:</h2></div>
-		<table class="table table-striped table-hover">
+		<table id="result" class="table table-striped table-hover">
 			<tr>
-				<td>Slack 1</td>
+				<td><b>Slack 1</b></td>
 				<td>{{ result.s_1 }}</td>
 			</tr>
 			<tr>
-				<td>Slack 2</td>
+				<td><b>Slack 2</b></td>
 				<td>{{ result.s_2 }}</td>
 			</tr>
 			<tr>
-				<td>Slack 3</td>
+				<td><b>Slack 3</b></td>
 				<td>{{ result.s_3 }}</td>
 			</tr>
 			<tr>
-				<td>Slack 4</td>
+				<td><b>Slack 4</b></td>
 				<td>{{ result.s_4 }}</td>
 			</tr>
 			<tr>
-				<td>Slack 5</td>
+				<td><b>Slack 5</b></td>
 				<td>{{ result.s_5 }}</td>
 			</tr>
 			<tr>
-				<td>Optimal solution</td>
+				<td><b>Optimal solution</b></td>
 				<td>{{ result.Optimal_solution }}</td>
 			</tr>
 			<tr>
-				<td>X ONE</td>
+				<td><b>X ONE</b></td>
 				<td>{{ result.XONE }}</td>
 			</tr>
 			<tr>
-				<td>Y TWO</td>
+				<td><b>Y TWO</b></td>
 				<td>{{ result.YTWO }}</td>
 			</tr>
 		</table>
