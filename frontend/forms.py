@@ -75,7 +75,7 @@ class SolveCudaForm(forms.Form):
         ('min', 'Min'),
     )
 
-    choice = forms.MultipleChoiceField(choices=CHOICES, label='Choice', error_messages={'required': 'You should choose one type.'})
+    choice = forms.ChoiceField(widget=forms.Select, choices=CHOICES, label='Choice', error_messages={'required': 'You should choose one type.'})
 
     def __init__(self, *args, **kwargs):
         super(SolveCudaForm, self).__init__(*args, **kwargs)
