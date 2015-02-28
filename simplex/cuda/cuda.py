@@ -74,6 +74,6 @@ def solving_cuda(maximum):
                 paired_result[word] = result["values"][_index]
                 _index += 1
 
-    paired_result["Optimal solution"] = result["result"]
+    paired_result["Optimal_solution"] = result["result"]
     simplex.log( "result \n\n" + str(result))
     return paired_result
