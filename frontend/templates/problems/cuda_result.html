@@ -5,13 +5,39 @@
 {% block content %}
 	<div class="row">
 		<div class="col-md-12">{{ result }}</div>
-		<div class="col-md-2">S_1:&nbsp;</div><div class="col-md-3">{{ result.s_1 }}</div>
-		<div class="col-md-2">s_2:&nbsp;</div><div class="col-md-3">{{ result.s_2 }}</div>
-		<div class="col-md-2">s_3:&nbsp;</div><div class="col-md-3">{{ result.s_3 }}</div>
-		<div class="col-md-2">s_4:&nbsp;</div><div class="col-md-3">{{ result.s_4 }}</div>
-		<div class="col-md-2">s_5:&nbsp;</div><div class="col-md-3">{{ result.s_5 }}</div>
-		<div class="col-md-2">Optimal solution:&nbsp;</div><div class="col-md-3">{{ result.Optimal_solution }}</div>
-		<div class="col-md-2">XONE:&nbsp;</div><div class="col-md-3">{{ result.XONE }}</div>
-		<div class="col-md-2">YTWO:&nbsp;</div><div class="col-md-3">{{ result.YTWO }}</div>
+		<table class="table table-striped table-hover">
+			<tr>
+				<td>Slack 1</td>
+				<td>{{ result.s_1 }}</td>
+			</tr>
+			<tr>
+				<td>Slack 2</td>
+				<td>{{ result.s_2 }}</td>
+			</tr>
+			<tr>
+				<td>Slack 3</td>
+				<td>{{ result.s_3 }}</td>
+			</tr>
+			<tr>
+				<td>Slack 4</td>
+				<td>{{ result.s_4 }}</td>
+			</tr>
+			<tr>
+				<td>Slack 5</td>
+				<td>{{ result.s_5 }}</td>
+			</tr>
+			<tr>
+				<td>Optimal solution</td>
+				<td>{{ result.Optimal_solution }}</td>
+			</tr>
+			<tr>
+				<td>X ONE</td>
+				<td>{{ result.XONE }}</td>
+			</tr>
+			<tr>
+				<td>Y TWO</td>
+				<td>{{ result.YTWO }}</td>
+			</tr>
+		</table>
 	</div>
 {% endblock %}
