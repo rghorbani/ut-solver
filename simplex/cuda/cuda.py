@@ -66,5 +66,14 @@ def solving_cuda(maximum):
         virtuals_constraints_num, virtuals_indices, 
         slacks_constraint_num , slacks_indices , maximum)
     # simplex.log( "variables "  + str(variabl))
+    paired_result = {}
+    _index = 0;
+    with open('/outpu/variable_names','r') as f:
+        for line in f:
+            for word in line.split():
+                paired_result[word] = result["values"][_index]
+                _index += 1
+
+    paired_result["Optimal solution"] = result["result"]
     simplex.log( "result \n\n" + str(result))
-    return result
+    return paired_result
