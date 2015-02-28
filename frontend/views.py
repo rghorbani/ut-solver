@@ -281,7 +281,7 @@ def solve_cuda(request):
             'form2': form2,
             'file_exists': file_exists,
             'view_name': 'Problem - CUDA',
-        })
+        }, context_instance=RequestContext(request))
 
 
 def handler403(request):
